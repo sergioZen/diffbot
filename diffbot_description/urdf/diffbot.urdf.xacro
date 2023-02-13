@@ -67,6 +67,10 @@
                    enable_gpu="${sensor_prop['laser']['enable_gpu']}">
   </xacro:laser>
 
+  <xacro:imu_sensor parent_link="base_link"
+                   sensor_prop="${sensor_prop}">
+  </xacro:imu_sensor>  
+
   <!-- Gazebo -->
   <xacro:gazebo_ros_control robotNamespace="/diffbot">
   </xacro:gazebo_ros_control>

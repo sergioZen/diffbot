@@ -15,6 +15,11 @@
         <arg name="model" value="$(arg model)" />
     </include>
 
+    <!--
+    <include file="$(find motor_ros_pi)/launch/servomotor_listener.launch"/>
+    -->
+    <!--<include file="$(find wit_node)/launch/wit_node.launch"/>-->
+
     <!-- Starting robot state publish which will publish tf -->
     <!-- This is needed to publish transforms between all links -->
     <!-- diff_drive_controller publishes only a single transfrom between odom and base_footprint -->
@@ -22,9 +27,11 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
         output="screen" ns="diffbot" />
 
+    <!--
     <include file="$(find diffbot_bringup)/launch/rplidar.launch" ns="diffbot">
         <arg name="laser_frame_id" value="$(arg laser_frame_id)" />
     </include>
+    -->
 
 </launch>
 

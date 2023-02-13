@@ -188,7 +188,7 @@
   </gazebo>
 </xacro:macro>
 
-<xacro:macro name="imu_sensor" params=" *joint_origin parent_link sensor_prop">
+<xacro:macro name="imu_sensor" params="parent_link sensor_prop">
 
   <xacro:property name="mesh"
      value="${sensor_prop['imu']['mesh']}"/>
@@ -240,8 +240,9 @@
   </gazebo>
 
   <joint name="imu_joint" type="fixed">
-    <axis xyz="0 1 0" />
-    <xacro:insert_block name="joint_origin" />
+    <!-- SBR:   <xacro:insert_block name="joint_origin" />-->
+    <!--<origin xyz="${sensor_prop['imu']['dx']} ${sensor_prop['imu']['dy']} ${sensor_prop['imu']['dz']}" rpy="0 0 0"/>-->
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${parent_link}"/>
     <child link="imu_link"/>
   </joint>

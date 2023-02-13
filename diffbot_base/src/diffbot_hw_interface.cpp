@@ -72,7 +72,8 @@ namespace diffbot_base
         init(nh_, nh_);
 
         // Wait for encoder messages being published
-        isReceivingMeasuredJointStates(ros::Duration(10));
+        //SBR:
+        //isReceivingMeasuredJointStates(ros::Duration(10));
     }
 
  

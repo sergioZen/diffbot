@@ -12,3 +12,18 @@ laser:
     max: 3.1415
   color: Gazebo/Grey
   enable_gpu: false
+
+imu:
+  mass: 0.005
+  size:
+    x: 0.01
+    y: 0.01
+    z: 0.003
+  #type: 'mpu' # choose one camera type [mpu, bosch]
+  dx: -0.045
+  dy: 0.02
+  dz: 0.01
+  mesh: '../components/bno055.stl' # Name of the mesh files. Leave it empty ('') to have a red box
+  #mesh: ''
+  scale: '0.01 0.01 0.005'
+  color: Gazebo/FlatBlack
