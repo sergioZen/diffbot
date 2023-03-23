@@ -73,7 +73,7 @@ namespace diffbot_base
 
         // Wait for encoder messages being published
         //SBR:
-        //isReceivingMeasuredJointStates(ros::Duration(10));
+        isReceivingMeasuredJointStates(ros::Duration(10));
     }
 
  
