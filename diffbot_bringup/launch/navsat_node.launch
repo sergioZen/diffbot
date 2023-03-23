@@ -1,0 +1,32 @@
+<!-- Odom node (Encoders + IMU) -->
+<launch>
+  <node pkg="robot_localization" type="navsat_transform_node"
+      name="navsat_transform_node" respawn="true" output="screen">
+   <!--Enter the magnetic declination for your location. If you don’t know it, see http://www.ngdc.noaa.gov/geomag-web (make sure to convert the value to radians).
+   This parameter is needed if your IMU prodives its orientation with respect to the magnetic north.-->
+   <param name="magnetic_declination_radians" value="0"/>
+   <!--Your IMU should read 0 for yaw when facing east. If it doesn’t, enter the offset here (desired_value = offset + sensor_raw_value).
+   For example, if your IMU reports 0 when facing north, as most of them do, this parameter would be pi/2 (~1.5707963).
+   This parameter changed in version 2.2.1. Previously, navsat_transform_node assumed that IMUs read 0 when facing north, so yaw_offset was used acordingly.-->
+   <param name="yaw_offset" value="0"/>
+   <!--If this is true, the nav_msgs/Odometry message produced by this node has its pose Z value set to 0.-->
+   <param name="zero_altitude" value="true"/>
+   <!--If this is true, navsat_transform_node will broadcast the transform between the UTM grid and the frame of the input odometry data. See Published Transforms below for more information.-->
+   <param name="broadcast_utm_transform" value="true"/>
+   <!--If true, navsat_transform_node will not get its heading from the IMU data, but from the input odometry message. Users should take care to only set this to true if your odometry message has orientation data specified in an earth-referenced frame, e.g., as produced by a magnetometer.
+   Additionally, if the odometry source is one of the state estimation nodes in robot_localization, the user should have at least one source of absolute orientation data being fed into the node, with the _differential and _relative parameters set to false.-->
+   <param name="use_odometry_yaw" value="false"/>
+   <param name="broadcast_cartesian_transform" value="true"/>
+   <!--If true, navsat_transform_node will also transform your robot’s world frame (e.g., map) position back to GPS coordinates, and publish a sensor_msgs/NavSatFix.html message on the /gps/filtered topic.-->
+   <param name="publish_filtered_gps" value="true"/>
+   <param name="wait_for_datum" value="false"/>
+   <rosparam param="datum">[40.396114001060546, -3.6985370000111195, 0.0, map, base_link]</rosparam>
+
+   <remap from="/odometry/gps" to="/my_robot/odometry/gps"/>
+   <remap from="/odometry/filtered" to="/my_robot/odometry/filtered" />
+
+   <!-- Inputs -->
+   <remap from="imu/data" to="/wit/imu_data" />
+   <remap from="gps/fix" to="/fake_gps" />
+  </node>
+</launch>

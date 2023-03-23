@@ -1,0 +1,8 @@
+orientation_stddev: 0.001
+gain: 0.01
+zeta: 0.001
+publish_tf: false
+use_mag: true
+source_frame: base_link
+world_frame: enu
+remove_gravity_vector: true

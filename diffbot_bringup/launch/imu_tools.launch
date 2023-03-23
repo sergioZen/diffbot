@@ -1,0 +1,5 @@
+<launch>
+
+   <node name="imu_tools" pkg="imu_tools" type="imu_calib" output="screen" />
+
+</launch>
