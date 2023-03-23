@@ -5,8 +5,6 @@
 #ifndef DIFFBOT_ENCODER_H
 #define DIFFBOT_ENCODER_H
 
-#include <Encoder.h>
-
 #include <ros.h>
 
 
@@ -35,9 +33,6 @@ namespace diffbot
     class Encoder
     {
     public:
-        // Teensy Encoder class that is capable of reading rising and falling edges of two Hall effect signals.
-        ::Encoder encoder;
-
         /** \brief Construct a diffbot::Encoder providing access to quadrature encoder ticks and angular joint velocity.
          * 
          * \param nh reference to the main ros::NodeHandle to compute the velocity from time and ticks or angle (s = v * t)
@@ -86,7 +81,7 @@ namespace diffbot
          * 
          * \returns encoder ticks
          */
-        inline int32_t read() { return encoder.read(); };
+        int32_t read() { return encoder.read(); };
 
         /** \brief Set the encoder tick count
          * 

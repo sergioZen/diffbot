@@ -1,3 +1,5 @@
+#include "Arduino/L298N_driver.h"
+
 /***************************************************************
    Motor driver definitions
    
@@ -11,7 +13,7 @@ diffbot::L298NMotorController::L298NMotorController(uint8_t motor_num, uint8_t a
 {
     pMotor_ = motor_driver_.getMotor(motor_num);
     pMotor_.setAddrForward() = addForward;
-    pMotor_.setAddrBackwards() = addrBackwards:
+    pMotor_.setAddrBackwards() = addrBackwards;
 }
 
 void diffbot::L298NMotorController::begin(uint16_t freq)
@@ -26,7 +28,7 @@ void initMotorController() {
 }
 */
 
-void diffbot::AdafruitMotorController::setSpeed(int value)
+void diffbot::L298NMotorController::setSpeed(int spd)
 {
    unsigned char reverse = 0;
 

@@ -4,10 +4,10 @@
 #include "base_controller.h"
 #include "Arduino/L298N_driver.h"
 
-#include "WProgram.h"
+//#include "WProgram.h"
 
 /* Include definition of serial commands */
-#include "commands.h"
+#include "Arduino/commands.h"
 
 ros::NodeHandle nh;
 
@@ -16,7 +16,7 @@ using namespace diffbot;
 L298NMotorController motor_controller_right = L298NMotorController(MOTOR_RIGHT);
 L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
-BaseController<L298NMotorController> base_controller(nh, &motor_controller_left, &motor_controller_right);
+BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
 
 /* Variable initialization */
@@ -51,6 +51,7 @@ void resetCommand() {
 }
 
 /* Run a command.  Commands are defined in commands.h */
+/*
 int runCommand() {
   int i = 0;
   char *p = argv1;
@@ -97,7 +98,7 @@ int runCommand() {
     Serial.println("OK");
     break;
   case MOTOR_SPEEDS:
-    /* Reset the auto stop timer */
+    //_Reset the auto stop timer:
     lastMotorCommand = millis();
     if (arg1 == 0 && arg2 == 0) {
       setMotorSpeeds(0, 0);
@@ -115,7 +116,7 @@ int runCommand() {
     Serial.println("OK"); 
     break;
   case MOTOR_RAW_PWM:
-    /* Reset the auto stop timer */
+    // Reset the auto stop timer:
     lastMotorCommand = millis();
     resetPID();
     moving = 0; // Sneaky way to temporarily disable the PID
@@ -138,7 +139,7 @@ int runCommand() {
     break;
   }
 }
-
+*/
 
 void setup()
 {
