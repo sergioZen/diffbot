@@ -1,19 +1,31 @@
 #include "encoder_diffbot.h"
+#include "Arduino_EncoderShield.h"
 
-
-diffbot::Encoder::Encoder(ros::NodeHandle& nh, uint8_t pin1, uint8_t pin2, int encoder_resolution)
-  : nh_(nh)
-  , encoder(pin1, pin2)
-  , encoder_resolution_(encoder_resolution)
-  , prev_update_time_(0, 0)
-  , prev_encoder_ticks_(0)
+diffbot::Encoder::Encoder(ros::NodeHandle& nh, int encoder_resolution)
 {
-
+  nh_ = nh;
+  encoder_resolution_ = encoder_resolution;
+  prev_update_time_ = ros::Time(0, 0);
+  prev_encoder_ticks_ = 0;
 }
 
-diffbot::JointState diffbot::Encoder::jointState()
+int32_t diffbot::Encoder::read(int encoder) {
+   if (encoder == LEFT_ENCODER) {
+      return global_left_enc_pos;
+   } else if (encoder == RIGHT_ENCODER) {
+      return global_right_enc_pos;
+   }
+   return prev_encoder_ticks_;
+}
+
+void diffbot::Encoder::write(int32_t p)
 {
-    long encoder_ticks = encoder.read();
+   ;   
+}
+
+diffbot::JointState diffbot::Encoder::jointState(int encoder)
+{
+    int32_t encoder_ticks = read(encoder);
     // This function calculates the motor's rotational (angular) velocity based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;
@@ -54,10 +66,9 @@ double diffbot::Encoder::ticksToAngle(const int &ticks) const
   return angle;
 }
 
-
-int diffbot::Encoder::getRPM()
+int diffbot::Encoder::getRPM(int encoder)
 {
-    long encoder_ticks = encoder.read();
+    long encoder_ticks = read(encoder);
     //this function calculates the motor's RPM based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;

@@ -4,7 +4,7 @@
 #include "base_controller.h"
 #include "Arduino/L298N_driver.h"
 
-//#include "WProgram.h"
+#include <Arduino.h>
 
 /* Include definition of serial commands */
 #include "Arduino/commands.h"
@@ -18,8 +18,8 @@ L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
 BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
-
-/* Variable initialization */
+/*
+// Variable initialization:
 
 // A pair of varibles to help parse serial commands (thanks Fergs)
 int arg = 0;
@@ -39,9 +39,9 @@ char argv2[16];
 long arg1;
 long arg2;
 
-/* Clear the current command parameters */
+// Clear the current command parameters
 void resetCommand() {
-  cmd = NULL;
+  cmd = '\0';
   memset(argv1, 0, sizeof(argv1));
   memset(argv2, 0, sizeof(argv2));
   arg1 = 0;
@@ -50,8 +50,7 @@ void resetCommand() {
   index = 0;
 }
 
-/* Run a command.  Commands are defined in commands.h */
-/*
+// Run a command.  Commands are defined in commands.h
 int runCommand() {
   int i = 0;
   char *p = argv1;

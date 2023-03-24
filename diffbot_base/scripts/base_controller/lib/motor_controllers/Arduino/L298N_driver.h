@@ -2,13 +2,6 @@
    Motor driver function definitions - by James Nugen
 *************************************************************/
 
-#define RIGHT_MOTOR_BACKWARD 5
-#define LEFT_MOTOR_BACKWARD  6
-#define RIGHT_MOTOR_FORWARD  9
-#define LEFT_MOTOR_FORWARD   10
-#define RIGHT_MOTOR_ENABLE 12
-#define LEFT_MOTOR_ENABLE 13
-
 #include <Wire.h>
 
 #include "diffbot_base_config.h"
@@ -41,7 +34,7 @@ namespace diffbot {
              * \param motor_num Number of the motor to control (one of 1, 2, 3, 4). Diffbot uses motors 3 and 4.
              * \param addr i2c address used to communicate with the motor driver.
              */
-            L298NMotorController(uint8_t motor_num, uint8_t addr=0x60);
+            L298NMotorController(uint8_t motor_num);
 
             /** \brief Initializes the communication with the motor driver
              * 
@@ -49,7 +42,7 @@ namespace diffbot {
              * An optional frequency parameter can be used to specify something other 
              * than the default maximum: 1.6KHz PWM frequency.
              */
-            void begin(uint16_t freq = 1600);
+            void begin();
 
             /** \brief Set the speed of the motor \ref pMotor_.
              * 

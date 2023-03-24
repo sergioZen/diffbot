@@ -2,11 +2,22 @@
  * Author: Franz Pucher
  */
 
+#define LEFT_ENCODER 1
+#define RIGHT_ENCODER 2
+
+//below can be changed, but should be PORTD pins; 
+//otherwise additional changes in the code are required
+#define LEFT_ENC_PIN_A PD2  //pin 2
+#define LEFT_ENC_PIN_B PD3  //pin 3
+
+//below can be changed, but should be PORTC pins
+#define RIGHT_ENC_PIN_A PC4  //pin A4
+#define RIGHT_ENC_PIN_B PC5   //pin A5
+
 #ifndef DIFFBOT_ENCODER_H
 #define DIFFBOT_ENCODER_H
 
 #include <ros.h>
-
 
 namespace diffbot
 {
@@ -16,20 +27,6 @@ namespace diffbot
         double angular_velocity_;
     };
 
-
-    /** \brief Decorates the Teensy Encoder Library to read the angular wheel velocity
-     * from quadrature wheel encoders.
-     * 
-     * This class is composed of \ref ::Encoder from https://www.pjrc.com/teensy/td_libs_Encoder.html,
-     * which is capable of reading rising and falling edges of two Hall effect signals. This yields
-     * the highest possible tick count (encoder resolution) from the encoders.
-     * Take the DG01D-E motor/encoder, that has a 6 pole magnetic disk (observed with magnetic paper) and therefore 3 pulses per revolution (ppr).
-     * Reading both edges (rising and falling) of both channels in the code, we can observe roughly 542 ticks at the wheel output shaft.
-     * Because the DG01D-E motor/encoder has a 48:1 gear ratio (according to its datasheet) we round the tick count up to 576 counts per wheel revolution). 
-     * So 576 counts / 48:1 gear ratio / 2 channels / 2 edges = 3 pulses per revolution at the motor shaft. 
-     * Having an encoder with more ppr would increase the encoder resolution. For example let's say we we have an encoder with 7 ppr, 
-     * then we get the following output resolution at the wheel: 7 ppr (at motor shaft) * 48:1 gear ratio * 2 channels * 2 edges = 1344 ppr (measured at wheel).
-     */
     class Encoder
     {
     public:
@@ -40,7 +37,7 @@ namespace diffbot
          * \param pin2 Pin of the second Hall effect sensor
          * \param encoder_resolution number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
          */
-        Encoder(ros::NodeHandle& nh, uint8_t pin1, uint8_t pin2, int encoder_resolution);
+        Encoder(ros::NodeHandle& nh, int encoder_resolution);
 
         /** \brief get revolutions per minute
          *
@@ -50,7 +47,7 @@ namespace diffbot
          * 
          * \returns revolutions per minute
          */
-        int getRPM();
+        int getRPM(int encoder);
 
 
         double angularPosition();
@@ -64,7 +61,7 @@ namespace diffbot
         double angularVelocity();
 
 
-        JointState jointState();
+        JointState jointState(int encoder = 0 );
 
         /** \brief Convert number of encoder ticks to angle in radians 
          *
@@ -81,7 +78,7 @@ namespace diffbot
          * 
          * \returns encoder ticks
          */
-        int32_t read() { return encoder.read(); };
+        int32_t read(int encoder = 0);
 
         /** \brief Set the encoder tick count
          * 
@@ -89,7 +86,7 @@ namespace diffbot
          * 
          * \param p encoder ticks
          */
-        inline void write(int32_t p) { encoder.write(p); };
+        void write(int32_t p);
 
         /** \brief Setter for encoder resolution
          * 
@@ -111,13 +108,16 @@ namespace diffbot
 
     private:
         // ROS node handle, which provides the current time to compute the angular velocity from the current tick count
-        ros::NodeHandle& nh_;
+        ros::NodeHandle nh_;
         // Number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
         int encoder_resolution_;
         // Previous time when the \ref getRPM or \ref angularVelocity method was called to calculated the delta update time.
         ros::Time prev_update_time_;
         // Previous encoder tick count when the \ref getRPM or \ref angularVelocity method was called to calculated the delta tick count.
-        long prev_encoder_ticks_;
+        int32_t prev_encoder_ticks_;
+
+        uint8_t pin1;
+        uint8_t pin2;
     };
 }
 

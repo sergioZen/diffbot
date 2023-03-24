@@ -30,10 +30,6 @@ namespace diffbot {
              */
             virtual void setSpeed(int value) = 0;
 
-            virtual void setAddrForward(int value) = 0;
-
-            virtual void setAddrBackwards(int value) = 0;
-
         protected:
             // Generic motor driver
             TMotorDriver motor_driver_;
