@@ -2,15 +2,19 @@
    Motor driver function definitions - by James Nugen
 *************************************************************/
 
-#include <Wire.h>
+#ifndef L298N_DRIVER_MOTOR_CONTROLLER_H
+#define L298N_DRIVER_MOTOR_CONTROLLER_H
 
-#include "diffbot_base_config.h"
+
+#include <Wire.h>
 
 #include "L298N_MotorShield.h"
 
+#include "diffbot_base_config.h"
+
 #include <motor_controller_interface.h>
 
-namespace diffbot {
+using namespace diffbot;
 
     /** \brief Implementation of the MotorControllerIntf for the Adafruit_MotorShield
      * 
@@ -61,7 +65,7 @@ namespace diffbot {
              * \param value positive or negative value to set the direction
              * and speed of the motor.
              */
-            void setSpeed(int value) override;
+            void setSpeed(int value);
             
 
         private:
@@ -69,4 +73,5 @@ namespace diffbot {
             L298N_DCMotor *pMotor_;
     };
 
-}
+
+#endif // L298N_DRIVER_MOTOR_CONTROLLER_H

@@ -1,4 +1,5 @@
-#include "Arduino/L298N_driver.h"
+#include "L298N_driver.h"
+
 
 /***************************************************************
    Motor driver definitions
@@ -8,18 +9,18 @@
    #define near the top of the main ROSArduinoBridge.ino file.
    
    *************************************************************/
-diffbot::L298NMotorController::L298NMotorController(uint8_t motor_num)
+L298NMotorController::L298NMotorController(uint8_t motor_num)
 {
    motor_driver_ = L298N_MotorShield();
    pMotor_ = motor_driver_.getMotor(motor_num);
 }
 
-void diffbot::L298NMotorController::begin()
+void L298NMotorController::begin()
 {
-    motor_driver_.begin();
+   motor_driver_.begin();
 }
 
-void diffbot::L298NMotorController::setSpeed(int spd)
+void L298NMotorController::setSpeed(int spd)
 {
    pMotor_->setSpeed(spd);
 }

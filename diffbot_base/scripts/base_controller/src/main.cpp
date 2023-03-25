@@ -2,12 +2,13 @@
 
 #include "diffbot_base_config.h"
 #include "base_controller.h"
-#include "Arduino/L298N_driver.h"
+#include "L298N_driver.h"
+#include "L298N_MotorShield.h"
 
 #include <Arduino.h>
 
 /* Include definition of serial commands */
-#include "Arduino/commands.h"
+#include "commands.h"
 
 ros::NodeHandle nh;
 
@@ -18,7 +19,6 @@ L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
 BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
-/*
 // Variable initialization:
 
 // A pair of varibles to help parse serial commands (thanks Fergs)
@@ -49,7 +49,7 @@ void resetCommand() {
   arg = 0;
   index = 0;
 }
-
+/*
 // Run a command.  Commands are defined in commands.h
 int runCommand() {
   int i = 0;

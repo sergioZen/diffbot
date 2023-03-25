@@ -1,3 +1,6 @@
+#ifndef _L298N_MotorShield_h_
+#define _L298N_MotorShield_h_
+
 #include <inttypes.h>
 
 #define RIGHT_MOTOR_FORWARD  9
@@ -48,3 +51,5 @@ private:
 
   L298N_DCMotor dcmotors[2];
 };
+
+#endif  // _L298N_MotorShield_h_
