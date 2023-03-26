@@ -1,19 +1,19 @@
 #include "encoder_diffbot.h"
-#include "Arduino_EncoderShield.h"
 
-diffbot::Encoder::Encoder(ros::NodeHandle& nh, int encoder_resolution)
+diffbot::Encoder::Encoder(ros::NodeHandle& nh, int encoder_resolution, Arduino_EncoderShield encoder_shield)
 {
   nh_ = nh;
   encoder_resolution_ = encoder_resolution;
   prev_update_time_ = ros::Time(0, 0);
   prev_encoder_ticks_ = 0;
+  encoder_shield_ = encoder_shield;
 }
 
 int32_t diffbot::Encoder::read(int encoder) {
    if (encoder == LEFT_ENCODER) {
-      return global_left_enc_pos;
+      return encoder_shield_.read(LEFT_ENCODER);
    } else if (encoder == RIGHT_ENCODER) {
-      return global_right_enc_pos;
+      return encoder_shield_.read(RIGHT_ENCODER);
    }
    return prev_encoder_ticks_;
 }

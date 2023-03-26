@@ -2,21 +2,13 @@
  * Author: Franz Pucher
  */
 
-#define LEFT_ENCODER 1
-#define RIGHT_ENCODER 2
-
-//below can be changed, but should be PORTD pins; 
-//otherwise additional changes in the code are required
-#define LEFT_ENC_PIN_A PD2  //pin 2
-#define LEFT_ENC_PIN_B PD3  //pin 3
-
-//below can be changed, but should be PORTC pins
-#define RIGHT_ENC_PIN_A PC4  //pin A4
-#define RIGHT_ENC_PIN_B PC5   //pin A5
-
 #ifndef DIFFBOT_ENCODER_H
 #define DIFFBOT_ENCODER_H
 
+#define LEFT_ENCODER 1
+#define RIGHT_ENCODER 2
+
+#include <Arduino_EncoderShield.h>
 #include <ros.h>
 
 namespace diffbot
@@ -37,7 +29,7 @@ namespace diffbot
          * \param pin2 Pin of the second Hall effect sensor
          * \param encoder_resolution number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
          */
-        Encoder(ros::NodeHandle& nh, int encoder_resolution);
+        Encoder(ros::NodeHandle& nh, int encoder_resolution, Arduino_EncoderShield encoder_shield);
 
         /** \brief get revolutions per minute
          *
@@ -118,6 +110,8 @@ namespace diffbot
 
         uint8_t pin1;
         uint8_t pin2;
+
+        Arduino_EncoderShield encoder_shield_;
     };
 }
 
