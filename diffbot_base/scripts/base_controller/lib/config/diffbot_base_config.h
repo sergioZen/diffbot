@@ -1,10 +1,10 @@
 
 
 /// Encoder pins
-#define ENCODER_LEFT_H1 5
-#define ENCODER_LEFT_H2 6
-#define ENCODER_RIGHT_H1 7
-#define ENCODER_RIGHT_H2 8
+#define ENCODER_LEFT_H1 26
+#define ENCODER_LEFT_H2 25
+#define ENCODER_RIGHT_H1 33
+#define ENCODER_RIGHT_H2 32
 
 // Encoder resolution used for initialization 
 // will be read from parameter server
