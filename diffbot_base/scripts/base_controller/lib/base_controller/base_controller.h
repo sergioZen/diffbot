@@ -17,7 +17,6 @@
 #include "diffbot_base_config.h"
 #include "encoder_diffbot.h"
 #include <motor_controller_interface.h>
-#include "Arduino_EncoderShield.h"
 #include "pid.h"
 
 
@@ -91,7 +90,7 @@ namespace diffbot {
          * @param motor_controller_left Pointer to the generic motor controller for the left motor
          * @param motor_controller_right Pointer to the generic motor controller for the right motor
          */
-        BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right, Arduino_EncoderShield &encoder_shield);
+        BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right);
 
         /**
          * @brief Stores update rate frequencies (Hz) for the main control loop, (optinal) imu and debug output.
@@ -303,9 +302,6 @@ namespace diffbot {
          */
         void resetEncodersCallback(const std_msgs::Empty& reset_msg);
 
-        // SBR: initializeEncoders(): initialize the encoders
-        void initializeEncoders();
-
         /**
          * @brief Callback method to update the PID constants for the left motor.
          *
@@ -326,7 +322,7 @@ namespace diffbot {
 
     private:
         // Reference to global node handle from main.cpp
-        ros::NodeHandle nh_;
+        ros::NodeHandle& nh_;
 
         // constants
         float wheel_radius_ = 0.0;
@@ -346,7 +342,7 @@ namespace diffbot {
         // Measured left and right joint states (angular position (rad) and angular velocity (rad/s))
         diffbot::JointState joint_state_left_, joint_state_right_;
 
-        int encoder_resolution_;
+        unsigned long encoder_resolution_;
 
         ros::Subscriber<std_msgs::Empty, BaseController<TMotorController, TMotorDriver>> sub_reset_encoders_;
 
@@ -356,6 +352,7 @@ namespace diffbot {
         ros::Publisher pub_encoders_;
 
         sensor_msgs::JointState msg_measured_joint_states_;
+        ros::Publisher pub_measured_joint_states_;
 
         MotorControllerIntf<TMotorDriver>* p_motor_controller_right_;
         MotorControllerIntf<TMotorDriver>* p_motor_controller_left_;
@@ -372,8 +369,6 @@ namespace diffbot {
         PID motor_pid_left_;
         PID motor_pid_right_;
 
-        ros::Publisher pub_measured_joint_states_;
-
         // DEBUG
         bool debug_;
     };
@@ -387,38 +382,23 @@ using BC = diffbot::BaseController<TMotorController, TMotorDriver>;
 
 template <typename TMotorController, typename TMotorDriver>
 diffbot::BaseController<TMotorController, TMotorDriver>
-    ::BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right, Arduino_EncoderShield &encoder_shield)
-    : update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
-    , last_update_time_(nh.now())
-    , nh_(nh)
-    , encoder_left_(nh, ENCODER_RESOLUTION, encoder_shield)
-    , encoder_right_(nh, ENCODER_RESOLUTION, encoder_shield)
+    ::BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right)
+    : nh_(nh)
+    , encoder_left_(nh, ENCODER_LEFT_H1, ENCODER_LEFT_H2, ENCODER_RESOLUTION)
+    , encoder_right_(nh, ENCODER_RIGHT_H1, ENCODER_RIGHT_H2, ENCODER_RESOLUTION)
     , sub_reset_encoders_("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
     , pub_encoders_("encoder_ticks", &encoder_msg_)
+    , pub_measured_joint_states_("measured_joint_states", &msg_measured_joint_states_)
     , sub_wheel_cmd_velocities_("wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
+    , last_update_time_(nh.now())
+    , update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
     , sub_pid_left_("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
     , sub_pid_right_("pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this)
     , motor_pid_left_(PWM_MIN, PWM_MAX, K_P, K_I, K_D)
     , motor_pid_right_(PWM_MIN, PWM_MAX, K_P, K_I, K_D)
-    , pub_measured_joint_states_("measured_joint_states", &msg_measured_joint_states_)
 {
-    /*
-     nh_ = nh;
-    //SBR:, encoder_left_(nh, ENCODER_RESOLUTION)
-    //SBR:, encoder_right_(nh, ENCODER_RESOLUTION)
-    update_rate_ = {UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG};
-    last_update_time_ = LastUpdateTime(nh_.now());
-    sub_reset_encoders_ = ros::Subscriber<std_msgs::Empty, BaseController<TMotorController, TMotorDriver>>("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this);
-    pub_encoders_ = ros::Publisher ("encoder_ticks", &encoder_msg_);
-    sub_wheel_cmd_velocities_ = ros::Subscriber<diffbot_msgs::WheelsCmdStamped, BaseController<TMotorController, TMotorDriver>>("wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this);
-    sub_pid_left_= ros::Subscriber<diffbot_msgs::PIDStamped, BaseController<TMotorController, TMotorDriver>>("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this);
-    sub_pid_right_= ros::Subscriber<diffbot_msgs::PIDStamped, BaseController<TMotorController, TMotorDriver>>("pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this);
-    motor_pid_left_ = diffbot::PID(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
-    motor_pid_right_ = diffbot::PID(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
-    pub_measured_joint_states_ = ros::Publisher("measured_joint_states", &msg_measured_joint_states_);
-*/
-   p_motor_controller_left_ = motor_controller_left;
-   p_motor_controller_right_ = motor_controller_right;    
+    p_motor_controller_left_ = motor_controller_left;
+    p_motor_controller_right_ = motor_controller_right;
 }
 
 
@@ -504,6 +484,7 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::resetEncodersCallb
     this->encoder_right_.write(0);
     this->nh_.loginfo("Reset both wheel encoders to zero");
 }
+
 
 template <typename TMotorController, typename TMotorDriver>
 void diffbot::BaseController<TMotorController, TMotorDriver>::pidLeftCallback(const diffbot_msgs::PIDStamped& pid_msg)

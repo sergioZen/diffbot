@@ -5,11 +5,10 @@
 #ifndef DIFFBOT_ENCODER_H
 #define DIFFBOT_ENCODER_H
 
-#define LEFT_ENCODER 1
-#define RIGHT_ENCODER 2
+#include <ESP32Encoder.h>
 
-#include <Arduino_EncoderShield.h>
 #include <ros.h>
+
 
 namespace diffbot
 {
@@ -22,6 +21,9 @@ namespace diffbot
     class Encoder
     {
     public:
+        // Teensy Encoder class that is capable of reading rising and falling edges of two Hall effect signals.
+        ::ESP32Encoder encoder;
+
         /** \brief Construct a diffbot::Encoder providing access to quadrature encoder ticks and angular joint velocity.
          * 
          * \param nh reference to the main ros::NodeHandle to compute the velocity from time and ticks or angle (s = v * t)
@@ -29,7 +31,7 @@ namespace diffbot
          * \param pin2 Pin of the second Hall effect sensor
          * \param encoder_resolution number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
          */
-        Encoder(ros::NodeHandle& nh, int encoder_resolution, Arduino_EncoderShield encoder_shield);
+        Encoder(ros::NodeHandle& nh, uint8_t pin1, uint8_t pin2, int encoder_resolution);
 
         /** \brief get revolutions per minute
          *
@@ -39,7 +41,7 @@ namespace diffbot
          * 
          * \returns revolutions per minute
          */
-        int getRPM(int encoder);
+        int getRPM();
 
 
         double angularPosition();
@@ -53,7 +55,7 @@ namespace diffbot
         double angularVelocity();
 
 
-        JointState jointState(int encoder = 0 );
+        JointState jointState();
 
         /** \brief Convert number of encoder ticks to angle in radians 
          *
@@ -70,7 +72,7 @@ namespace diffbot
          * 
          * \returns encoder ticks
          */
-        int32_t read(int encoder = 0);
+        inline int32_t read() { return encoder.getCount(); };
 
         /** \brief Set the encoder tick count
          * 
@@ -78,7 +80,7 @@ namespace diffbot
          * 
          * \param p encoder ticks
          */
-        void write(int32_t p);
+        inline void write(int32_t p) { encoder.setCount(p); };
 
         /** \brief Setter for encoder resolution
          * 
@@ -100,18 +102,13 @@ namespace diffbot
 
     private:
         // ROS node handle, which provides the current time to compute the angular velocity from the current tick count
-        ros::NodeHandle nh_;
+        ros::NodeHandle& nh_;
         // Number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
         int encoder_resolution_;
         // Previous time when the \ref getRPM or \ref angularVelocity method was called to calculated the delta update time.
         ros::Time prev_update_time_;
         // Previous encoder tick count when the \ref getRPM or \ref angularVelocity method was called to calculated the delta tick count.
-        int32_t prev_encoder_ticks_;
-
-        uint8_t pin1;
-        uint8_t pin2;
-
-        Arduino_EncoderShield encoder_shield_;
+        long prev_encoder_ticks_;
     };
 }
 

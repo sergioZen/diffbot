@@ -1,31 +1,25 @@
 #include "encoder_diffbot.h"
 
-diffbot::Encoder::Encoder(ros::NodeHandle& nh, int encoder_resolution, Arduino_EncoderShield encoder_shield)
+diffbot::Encoder::Encoder(ros::NodeHandle& nh, uint8_t pin1, uint8_t pin2, int encoder_resolution)
+  : nh_(nh)
+//  , encoder(pin1, pin2)
+  , encoder_resolution_(encoder_resolution)
+  , prev_update_time_(0, 0)
+  , prev_encoder_ticks_(0)
 {
-  nh_ = nh;
-  encoder_resolution_ = encoder_resolution;
-  prev_update_time_ = ros::Time(0, 0);
-  prev_encoder_ticks_ = 0;
-  encoder_shield_ = encoder_shield;
+  // Enable the weak pull up resistors
+  ESP32Encoder::useInternalWeakPullResistors=UP;
+
+  // use pin 19 and 18 for the first encoder
+  encoder.attachHalfQuad(pin1, pin2);
+
+  // clear the encoder's raw count and set the tracked count to zero
+  encoder.clearCount();
 }
 
-int32_t diffbot::Encoder::read(int encoder) {
-   if (encoder == LEFT_ENCODER) {
-      return encoder_shield_.read(LEFT_ENCODER);
-   } else if (encoder == RIGHT_ENCODER) {
-      return encoder_shield_.read(RIGHT_ENCODER);
-   }
-   return prev_encoder_ticks_;
-}
-
-void diffbot::Encoder::write(int32_t p)
+diffbot::JointState diffbot::Encoder::jointState()
 {
-   ;   
-}
-
-diffbot::JointState diffbot::Encoder::jointState(int encoder)
-{
-    int32_t encoder_ticks = read(encoder);
+    long encoder_ticks = encoder.getCount();
     // This function calculates the motor's rotational (angular) velocity based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;
@@ -66,9 +60,10 @@ double diffbot::Encoder::ticksToAngle(const int &ticks) const
   return angle;
 }
 
-int diffbot::Encoder::getRPM(int encoder)
+
+int diffbot::Encoder::getRPM()
 {
-    long encoder_ticks = read(encoder);
+    long encoder_ticks = encoder.getCount();
     //this function calculates the motor's RPM based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;

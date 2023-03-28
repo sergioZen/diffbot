@@ -4,7 +4,6 @@
 #include "base_controller.h"
 #include "L298N_driver.h"
 #include "L298N_MotorShield.h"
-#include "Arduino_EncoderShield.h"
 
 #include <Arduino.h>
 
@@ -18,9 +17,7 @@ using namespace diffbot;
 L298NMotorController motor_controller_right = L298NMotorController(MOTOR_RIGHT);
 L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
-Arduino_EncoderShield encoder_shield = Arduino_EncoderShield();
-
-BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right, encoder_shield);
+BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
 // Variable initialization:
 
@@ -145,48 +142,13 @@ int runCommand() {
 
 void setup()
 {
-    Serial.begin(9600);
-    Serial.println("Start diffbot Setup over ESP32");
-
-    ros::NodeHandle nh;
-
-    Serial.println("Start diffbot Setup over ESP32 1.2");
-
-    using namespace diffbot;
-
-    Serial.println("Start diffbot Setup over ESP32 1.3");
-
-    L298NMotorController motor_controller_right = L298NMotorController(MOTOR_RIGHT);
-
-    Serial.println("Start diffbot Setup over ESP32 1.4");
-
-
-    L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
-
-    Serial.println("Start diffbot Setup over ESP32 1.5");
-
-    BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right, encoder_shield);
-
-    Serial.println("Start diffbot Setup over ESP32 1.6");
-
     base_controller.setup();
-
-    Serial.println("Start diffbot Setup over ESP32 1.7");
-/*
     base_controller.init();
 
-    Serial.println("Start diffbot Setup over ESP32 2");
-
-    //nh.loginfo("Initialize DiffBot Motor Controllers");
-
-    Serial.println("Start diffbot Setup over ESP32 3");
-
+    nh.loginfo("Initialize DiffBot Motor Controllers");
     motor_controller_left.begin();
     motor_controller_right.begin();
     nh.loginfo("Setup finished");
-
-    Serial.println("End Setup diffbot over ESP32");
-    */
 }
 
 
