@@ -146,7 +146,7 @@ int runCommand() {
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(57600);
     Serial.println("113");
     base_controller.setup();
     base_controller.init();

@@ -418,10 +418,13 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     }
     Serial.println("WiFi connected - IP address:  ");
     Serial.println(WiFi.localIP());
-    nh_.getHardware()->setConnection("192.168.3.151", "11311");
+    
+    IPAddress server(192, 168, 3, 151);  // Ubuntu ROSCORE node: 192.168.3.151:11311
+    const uint16_t serverPort = 11311;
+    nh_.getHardware()->setConnection(server, serverPort);
     nh_.initNode();
-    nh_.advertise(ir_values_node);
-    pinMode(IR_pin,INPUT);
+    //nh_.advertise(ir_values_node);
+    //pinMode(IR_pin,INPUT);
 
     Serial.println("wwwwwwwwwwwwwwww");
     nh_.advertise(pub_encoders_);
