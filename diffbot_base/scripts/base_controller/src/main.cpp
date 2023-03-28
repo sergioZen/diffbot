@@ -1,4 +1,8 @@
+#define ROSSERIAL_ARDUINO_TCP #LorenzF solution -> which is now updated in noetic-devel -> ros_lib->ros.h
+#include "WiFi.h"
 #include <ros.h>
+#include <std_msgs/Int16.h>
+#define IR_pin 16
 
 #include "diffbot_base_config.h"
 #include "base_controller.h"
@@ -142,8 +146,11 @@ int runCommand() {
 
 void setup()
 {
+    Serial.begin(9600);
+    Serial.println("113");
     base_controller.setup();
     base_controller.init();
+    Serial.println("113");
 
     nh.loginfo("Initialize DiffBot Motor Controllers");
     motor_controller_left.begin();
@@ -157,7 +164,7 @@ void loop()
     static bool imu_is_initialized;
 
     Serial.println("Start diffbot loop over ESP32");
-
+    /*
     // The main control loop for the base_conroller.
     // This block drives the robot based on a defined control rate
     ros::Duration command_dt = nh.now() - base_controller.lastUpdateTime().control;
@@ -207,6 +214,7 @@ void loop()
             base_controller.lastUpdateTime().debug = nh.now();
         }
     }
+    */
     // Call all the callbacks waiting to be called
     nh.spinOnce();
 }

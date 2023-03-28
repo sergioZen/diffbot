@@ -342,7 +342,7 @@ namespace diffbot {
         // Measured left and right joint states (angular position (rad) and angular velocity (rad/s))
         diffbot::JointState joint_state_left_, joint_state_right_;
 
-        unsigned long encoder_resolution_;
+        int encoder_resolution_;
 
         ros::Subscriber<std_msgs::Empty, BaseController<TMotorController, TMotorDriver>> sub_reset_encoders_;
 
@@ -405,8 +405,27 @@ diffbot::BaseController<TMotorController, TMotorDriver>
 template <typename TMotorController, typename TMotorDriver>
 void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
 {
+    Serial.begin(115200);
+    Serial.println();
+    Serial.print("Connecting to ");
+    Serial.println("white");
+    WiFi.begin("white", "whitewhite!");
+    
+    while (WiFi.status() != WL_CONNECTED) // -> wifi delay -> a must -> other wise it will restart continuously 
+    {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("WiFi connected - IP address:  ");
+    Serial.println(WiFi.localIP());
+    nh_.getHardware()->setConnection("192.168.3.151", "11311");
     nh_.initNode();
+    nh_.advertise(ir_values_node);
+    pinMode(IR_pin,INPUT);
+
+    Serial.println("wwwwwwwwwwwwwwww");
     nh_.advertise(pub_encoders_);
+    Serial.println("mmmmmmmmmmmmmmmm");
 
     // msg_measured_joint_states_ is of type sensor_msgs::JointState
     // which contains float[] joint arrays of undefined size.
@@ -427,6 +446,8 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
 
     while (!nh_.connected())
     {
+        delay(500);
+        Serial.print(".");
         nh_.spinOnce();
     }
 }
