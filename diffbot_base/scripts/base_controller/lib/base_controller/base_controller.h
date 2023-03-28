@@ -17,6 +17,7 @@
 #include "diffbot_base_config.h"
 #include "encoder_diffbot.h"
 #include <motor_controller_interface.h>
+#include "Arduino_EncoderShield.h"
 #include "pid.h"
 
 
@@ -90,7 +91,7 @@ namespace diffbot {
          * @param motor_controller_left Pointer to the generic motor controller for the left motor
          * @param motor_controller_right Pointer to the generic motor controller for the right motor
          */
-        BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right);
+        BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right, Arduino_EncoderShield &encoder_shield);
 
         /**
          * @brief Stores update rate frequencies (Hz) for the main control loop, (optinal) imu and debug output.
@@ -386,12 +387,12 @@ using BC = diffbot::BaseController<TMotorController, TMotorDriver>;
 
 template <typename TMotorController, typename TMotorDriver>
 diffbot::BaseController<TMotorController, TMotorDriver>
-    ::BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right)
+    ::BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right, Arduino_EncoderShield &encoder_shield)
     : update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
     , last_update_time_(nh.now())
     , nh_(nh)
-    , encoder_left_(nh, ENCODER_RESOLUTION)
-    , encoder_right_(nh, ENCODER_RESOLUTION)
+    , encoder_left_(nh, ENCODER_RESOLUTION, encoder_shield)
+    , encoder_right_(nh, ENCODER_RESOLUTION, encoder_shield)
     , sub_reset_encoders_("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
     , pub_encoders_("encoder_ticks", &encoder_msg_)
     , sub_wheel_cmd_velocities_("wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)

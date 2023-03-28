@@ -4,6 +4,7 @@
 #include "base_controller.h"
 #include "L298N_driver.h"
 #include "L298N_MotorShield.h"
+#include "Arduino_EncoderShield.h"
 
 #include <Arduino.h>
 
@@ -17,7 +18,9 @@ using namespace diffbot;
 L298NMotorController motor_controller_right = L298NMotorController(MOTOR_RIGHT);
 L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
-BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
+Arduino_EncoderShield encoder_shield = Arduino_EncoderShield();
+
+BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right, encoder_shield);
 
 // Variable initialization:
 

@@ -13,6 +13,31 @@ static uint8_t microstepcurve[] = {0,   25,  50,  74,  98,  120, 141, 162, 180,
                                    197, 212, 225, 236, 244, 250, 253, 255};
 #endif
 
+volatile long global_left_enc_pos = 0L;
+volatile long global_right_enc_pos = 0L;
+
+static const int8_t ENC_STATES [] = {0,1,-1,0,-1,0,0,1,1,0,0,-1,0,-1,1,0};  //encoder lookup table
+   
+/* Interrupt routine for LEFT encoder, taking care of actual counting */
+ISR (PCINT2_vect){
+   static uint8_t enc_last=0;
+         
+   enc_last <<=2; //shift previous state two places
+   enc_last |= (PIND & (3 << 2)) >> 2; //read the current state into lowest 2 bits
+
+   global_left_enc_pos += ENC_STATES[(enc_last & 0x0f)];
+}
+
+/* Interrupt routine for RIGHT encoder, taking care of actual counting */
+ISR (PCINT1_vect){
+   static uint8_t enc_last=0;
+         
+   enc_last <<=2; //shift previous state two places
+   enc_last |= (PINC & (3 << 4)) >> 4; //read the current state into lowest 2 bits
+
+   global_right_enc_pos += ENC_STATES[(enc_last & 0x0f)];
+}
+
 Arduino_EncoderShield::Arduino_EncoderShield() {};
 
 bool Arduino_EncoderShield::begin() {
@@ -40,3 +65,11 @@ bool Arduino_EncoderShield::begin() {
    return true;
 }
 
+int Arduino_EncoderShield::read(int encoder) {
+   if (encoder == LEFT_ENCODER) {
+      return global_left_enc_pos;
+   } else if (encoder == RIGHT_ENCODER) {
+      return global_right_enc_pos;
+   }
+   return 0;
+}
