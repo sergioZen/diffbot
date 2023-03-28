@@ -1,3 +1,19 @@
+// ESP32 keep rebooting when trying to use rosserial:
+//
+// Change in: ~/Arduino/libraries/ros_lib/ros.h
+// #if defined(ESP8266) or defined(ESP32) or defined(ROSSERIAL_ARDUINO_TCP)
+//   #include "ArduinoTcpHardware.h"
+// #else
+//   #include "ArduinoHardware.h"
+// #endif
+//
+// Into:
+// #if defined(ROSSERIAL_ARDUINO_TCP)
+//   #include "ArduinoTcpHardware.h"
+// #else
+//   #include "ArduinoHardware.h"
+// #endif
+
 #define ROSSERIAL_ARDUINO_TCP #LorenzF solution -> which is now updated in noetic-devel -> ros_lib->ros.h
 #include "WiFi.h"
 #include <ros.h>
@@ -146,7 +162,7 @@ int runCommand() {
 
 void setup()
 {
-    Serial.begin(57600);
+    Serial.begin(115200);
     Serial.println("113");
     base_controller.setup();
     base_controller.init();
@@ -163,6 +179,7 @@ void loop()
 {
     static bool imu_is_initialized;
 
+    delay(1000);
     Serial.println("Start diffbot loop over ESP32");
     /*
     // The main control loop for the base_conroller.

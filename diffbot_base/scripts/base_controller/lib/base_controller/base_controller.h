@@ -416,6 +416,8 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
         delay(500);
         Serial.print(".");
     }
+    delay(2000);
+
     Serial.println("WiFi connected - IP address:  ");
     Serial.println(WiFi.localIP());
     
@@ -447,12 +449,14 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     nh_.subscribe(sub_pid_left_);
     nh_.subscribe(sub_pid_right_);
 
+    /*
     while (!nh_.connected())
     {
         delay(500);
         Serial.print(".");
         nh_.spinOnce();
     }
+    */
 }
 
 template <typename TMotorController, typename TMotorDriver>
@@ -481,6 +485,9 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::init()
     delay(1);
 
     max_angular_velocity_ = max_linear_velocity_ / wheel_radius_;
+
+    Serial.println("Max ang vel");
+    Serial.println(max_angular_velocity_);
 
     delay(1000);
 }
