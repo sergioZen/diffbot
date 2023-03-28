@@ -165,7 +165,7 @@ void setup()
 
     Serial.println("Start diffbot Setup over ESP32 1.5");
 
-    BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
+    BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right, encoder_shield);
 
     Serial.println("Start diffbot Setup over ESP32 1.6");
 
