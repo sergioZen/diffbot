@@ -405,29 +405,6 @@ diffbot::BaseController<TMotorController, TMotorDriver>
 template <typename TMotorController, typename TMotorDriver>
 void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
 {
-    Serial.begin(115200);
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println("white");
-    WiFi.begin("white", "whitewhite!");
-    
-    while (WiFi.status() != WL_CONNECTED) // -> wifi delay -> a must -> other wise it will restart continuously 
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    delay(2000);
-
-    Serial.println("WiFi connected - IP address:  ");
-    Serial.println(WiFi.localIP());
-    
-    IPAddress server(192, 168, 3, 151);  // Ubuntu ROSCORE node: 192.168.3.151:11311
-    const uint16_t serverPort = 11311;
-    nh_.getHardware()->setConnection(server, serverPort);
-    nh_.initNode();
-    //nh_.advertise(ir_values_node);
-    //pinMode(IR_pin,INPUT);
-
     Serial.println("wwwwwwwwwwwwwwww");
     nh_.advertise(pub_encoders_);
     Serial.println("mmmmmmmmmmmmmmmm");
