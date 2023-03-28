@@ -23,7 +23,7 @@ BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &mot
 
 // A pair of varibles to help parse serial commands (thanks Fergs)
 int arg = 0;
-int index = 0;
+int indexCmd = 0;
 
 // Variable to hold an input character
 char chr;
@@ -47,7 +47,7 @@ void resetCommand() {
   arg1 = 0;
   arg2 = 0;
   arg = 0;
-  index = 0;
+  indexCmd = 0;
 }
 /*
 // Run a command.  Commands are defined in commands.h
@@ -142,19 +142,56 @@ int runCommand() {
 
 void setup()
 {
+    Serial.begin(9600);
+    Serial.println("Start diffbot Setup over ESP32");
+
+    ros::NodeHandle nh;
+
+    Serial.println("Start diffbot Setup over ESP32 1.2");
+
+    using namespace diffbot;
+
+    Serial.println("Start diffbot Setup over ESP32 1.3");
+
+    L298NMotorController motor_controller_right = L298NMotorController(MOTOR_RIGHT);
+
+    Serial.println("Start diffbot Setup over ESP32 1.4");
+
+
+    L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
+
+    Serial.println("Start diffbot Setup over ESP32 1.5");
+
+    BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
+
+    Serial.println("Start diffbot Setup over ESP32 1.6");
+
     base_controller.setup();
+
+    Serial.println("Start diffbot Setup over ESP32 1.7");
+/*
     base_controller.init();
 
-    nh.loginfo("Initialize DiffBot Motor Controllers");
+    Serial.println("Start diffbot Setup over ESP32 2");
+
+    //nh.loginfo("Initialize DiffBot Motor Controllers");
+
+    Serial.println("Start diffbot Setup over ESP32 3");
+
     motor_controller_left.begin();
     motor_controller_right.begin();
     nh.loginfo("Setup finished");
+
+    Serial.println("End Setup diffbot over ESP32");
+    */
 }
 
 
 void loop()
 {
     static bool imu_is_initialized;
+
+    Serial.println("Start diffbot loop over ESP32");
 
     // The main control loop for the base_conroller.
     // This block drives the robot based on a defined control rate

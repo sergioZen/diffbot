@@ -17,6 +17,7 @@ Arduino_EncoderShield::Arduino_EncoderShield() {};
 
 bool Arduino_EncoderShield::begin() {
    //set as inputs
+   /*
    DDRD &= ~(1<<LEFT_ENC_PIN_A);
    DDRD &= ~(1<<LEFT_ENC_PIN_B);
    DDRC &= ~(1<<RIGHT_ENC_PIN_A);
@@ -35,6 +36,7 @@ bool Arduino_EncoderShield::begin() {
    
    // enable PCINT1 and PCINT2 interrupt in the general interrupt mask
    PCICR |= (1 << PCIE1) | (1 << PCIE2);
+   */
    return true;
 }
 
