@@ -405,9 +405,7 @@ diffbot::BaseController<TMotorController, TMotorDriver>
 template <typename TMotorController, typename TMotorDriver>
 void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
 {
-    Serial.println("wwwwwwwwwwwwwwww");
     nh_.advertise(pub_encoders_);
-    Serial.println("mmmmmmmmmmmmmmmm");
 
     // msg_measured_joint_states_ is of type sensor_msgs::JointState
     // which contains float[] joint arrays of undefined size.
@@ -462,9 +460,6 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::init()
     delay(1);
 
     max_angular_velocity_ = max_linear_velocity_ / wheel_radius_;
-
-    Serial.println("Max ang vel");
-    Serial.println(max_angular_velocity_);
 
     delay(1000);
 }

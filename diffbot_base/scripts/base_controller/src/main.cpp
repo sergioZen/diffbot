@@ -14,11 +14,16 @@
 //   #include "ArduinoHardware.h"
 // #endif
 
-#define ROSSERIAL_ARDUINO_TCP
+//#define ROSSERIAL_ARDUINO_TCP
 #define ESP32
  
-#include <WiFi.h>
+//#include <WiFi.h>
+
+#include <Arduino.h>
 #include <ros.h>
+#include <std_msgs/String.h>
+
+
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int16.h>
 
@@ -28,7 +33,6 @@
 #include "L298N_driver.h"
 #include "L298N_MotorShield.h"
 
-#include <Arduino.h>
 
 /* Include definition of serial commands */
 #include "commands.h"
@@ -75,6 +79,8 @@ void resetCommand() {
   arg = 0;
   indexCmd = 0;
 }
+
+
 /*
 // Run a command.  Commands are defined in commands.h
 int runCommand() {
@@ -165,7 +171,93 @@ int runCommand() {
   }
 }
 */
- 
+   
+   /*SBR: working and sending messages to rostopic echo chatter*/
+   /*
+   std_msgs::String str_msg;
+   ros::Publisher chatter("chatter", &str_msg);
+   
+   char hello[13] = "hello world!";
+   
+    void setup()
+    {
+        //Serial.begin(57600);
+        //Serial.println();
+        //Serial.print("Connecting to ");
+        nh.initNode();
+        nh.advertise(chatter);
+
+        delay(1000);
+    }
+   
+   void loop()
+   {
+        str_msg.data = hello;
+        chatter.publish( &str_msg );
+        nh.spinOnce();
+        delay(1000);
+
+        if (nh.connected()) {  
+            // Call all the callbacks waiting to be called
+            nh.spinOnce();
+            delay(1000); // 20Hz
+            //Serial.print("\nOK Loop TCP-IP!!!");
+        }
+        else{
+            nh.initNode();
+            delay(500);
+            nh.logerror("Initialize DiffBot Motor Controllers");
+            //Serial.print(".");       
+        }
+    }
+    */
+
+std_msgs::String str_msg;
+   ros::Publisher chatter("chatter", &str_msg);
+   
+   char hello[13] = "hello world!";
+   
+    void setup()
+    {
+        //Serial.begin(57600);
+        //Serial.println();
+        //Serial.print("Connecting to ");
+        nh.initNode();
+        nh.advertise(chatter);
+
+        delay(1000);
+
+        base_controller.setup();
+        base_controller.init();
+
+        nh.logerror("Initialize DiffBot Motor Controllers");
+        motor_controller_left.begin();
+        motor_controller_right.begin();
+        nh.logdebug("Setup finished");        
+    }
+   
+   void loop()
+   {
+        str_msg.data = hello;
+        chatter.publish( &str_msg );
+        nh.spinOnce();
+        delay(1000);
+
+        if (nh.connected()) {  
+            // Call all the callbacks waiting to be called
+            nh.spinOnce();
+            delay(1000); // 20Hz
+            //Serial.print("\nOK Loop TCP-IP!!!");
+        }
+        else{
+            nh.initNode();
+            delay(500);
+            nh.logerror("Initialize DiffBot Motor Controllers");
+            //Serial.print(".");       
+        }
+    }
+
+/*
 void setup()
 {
     Serial.begin(115200);
@@ -282,4 +374,5 @@ void loop()
         }
     }
 }
+*/
 
