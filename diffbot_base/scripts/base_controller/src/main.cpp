@@ -238,10 +238,12 @@ std_msgs::String str_msg;
    
    void loop()
    {
+      /*
         str_msg.data = hello;
         chatter.publish( &str_msg );
         nh.spinOnce();
         delay(1000);
+      */
 
         static bool imu_is_initialized;
 
@@ -277,8 +279,9 @@ std_msgs::String str_msg;
         
         // Call all the callbacks waiting to be called
         nh.spinOnce();
-        delay(1000); // 20Hz
+        delay(50); // 20Hz
 
+        /*
         if (nh.connected()) {  
             // Call all the callbacks waiting to be called
             nh.spinOnce();
@@ -291,6 +294,7 @@ std_msgs::String str_msg;
             nh.logerror("Initialize DiffBot Motor Controllers");
             //Serial.print(".");       
         }
+        */
     }
 
 /*

@@ -8,6 +8,7 @@ diffbot::PID::PID(float min_val, float max_val, float kp, float ki, float kd):
     ki_(ki),
     kd_(kd)
 {
+    prev_error_ = 0;
 }
 
 double diffbot::PID::compute(float setpoint, float measured_value)

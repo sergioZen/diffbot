@@ -389,7 +389,7 @@ diffbot::BaseController<TMotorController, TMotorDriver>
     , sub_reset_encoders_("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
     , pub_encoders_("encoder_ticks", &encoder_msg_)
     , pub_measured_joint_states_("measured_joint_states", &msg_measured_joint_states_)
-    , sub_wheel_cmd_velocities_("wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
+    , sub_wheel_cmd_velocities_("diffbot/wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
     , last_update_time_(nh.now())
     , update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
     , sub_pid_left_("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
@@ -473,6 +473,10 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::commandCallback(co
     wheel_cmd_velocity_left_ = cmd_msg.wheels_cmd.angular_velocities.joint[0];
     wheel_cmd_velocity_right_ = cmd_msg.wheels_cmd.angular_velocities.joint[1];
 
+    String log_msg = String("Rcv: w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
+                String(" w_cmd_vel_right_: ") + String(wheel_cmd_velocity_right_);
+    nh_.loginfo(log_msg.c_str());    
+
     // Used for the eStop. In case no diffbot_msgs::WheelsCmdStamped messages are received on the wheel_cmd_velocities 
     // topic, the eStop method is called (see main loop in main.cpp)
     lastUpdateTime().command_received = nh_.now();
@@ -521,6 +525,7 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::read()
 
     msg_measured_joint_states_.velocity[0] = joint_state_left_.angular_velocity_;
     msg_measured_joint_states_.velocity[1] = joint_state_right_.angular_velocity_;
+    nh_.loginfo("Publish pub_measured_joint_states_");
     pub_measured_joint_states_.publish(&msg_measured_joint_states_);
 
     // get the current tick count of each encoder
@@ -532,7 +537,8 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::read()
     // Avoid having too many publishers
     // Otherwise error like 'wrong checksum for topic id and msg'
     // and 'Write timeout: Write timeout' happen.
-    //pub_encoders_.publish(&encoder_msg_);
+    nh_.loginfo("Publish pub_encoders");
+    pub_encoders_.publish(&encoder_msg_);    
 }
 
 template <typename TMotorController, typename TMotorDriver>
@@ -555,6 +561,12 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::write()
 
     p_motor_controller_left_->setSpeed(motor_cmd_left_);
     p_motor_controller_right_->setSpeed(motor_cmd_right_);
+
+    String log_msg = String("Set: w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
+                String(" cmd_left_: ") + String(motor_cmd_left_) + 
+                String(" w_cmd_ve_right_: ") + String(wheel_cmd_velocity_right_) + 
+                String(" cmd_right_: ") + String(motor_cmd_right_);
+    nh_.loginfo(log_msg.c_str());
 }
 
 template <typename TMotorController, typename TMotorDriver>
