@@ -8,7 +8,7 @@
 
 // Encoder resolution used for initialization 
 // will be read from parameter server
-#define ENCODER_RESOLUTION 542
+#define ENCODER_RESOLUTION 1920
 
 /// Motor L298N
 #define MOTOR_LEFT 1

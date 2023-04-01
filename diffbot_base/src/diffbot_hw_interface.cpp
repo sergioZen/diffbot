@@ -171,6 +171,11 @@ namespace diffbot_base
         double motor_constant_right_inv = (gain_ + trim_) / motor_constant_;
         double motor_constant_left_inv = (gain_ - trim_) / motor_constant_;
 
+        if (joint_velocity_commands_[0] != 0)
+        {
+         int fff = 0;
+        }
+
 
         joint_velocity_commands_[0] = joint_velocity_commands_[0] * motor_constant_left_inv;
         joint_velocity_commands_[1] = joint_velocity_commands_[1] * motor_constant_right_inv;
@@ -184,7 +189,9 @@ namespace diffbot_base
             wheel_cmd_msg.wheels_cmd.angular_velocities.joint.push_back(joint_velocity_commands_[i]);
         }
 
+        ROS_INFO("... Start write to robot hw publish wheel_cmd_velocities");
         pub_wheel_cmd_velocities_.publish(wheel_cmd_msg);
+        ROS_INFO("... End write to robot hw publish wheel_cmd_velocities");
 
         // The following code provides another velocity commands interface
         // With it a motor driver node can directly subscribe to the desired velocities.
@@ -224,8 +231,10 @@ namespace diffbot_base
         //     right_motor.data += right_offset * (threshold - right_motor.data) / threshold;
         // }
 
+        ROS_INFO("... Start write to robot hw publish pub_left_motor_value_ and right_motor");
         pub_left_motor_value_.publish(left_motor);
         pub_right_motor_value_.publish(right_motor);
+        ROS_INFO("... End write to robot hw publish pub_left_motor_value_ and right_motor");        
 
 
         if (debug_)
