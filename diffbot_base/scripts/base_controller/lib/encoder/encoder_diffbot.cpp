@@ -32,9 +32,18 @@ diffbot::JointState diffbot::Encoder::jointState()
     double delta_angle = ticksToAngle(delta_ticks);
 
     joint_state_.angular_position_ += delta_angle;
-
-
     joint_state_.angular_velocity_ = delta_angle / dts;
+
+    Serial.print("dt: ");
+    Serial.print(dts);
+    Serial.print(" Delta_angle: ");
+    Serial.print(delta_angle);
+    Serial.print(" Angular vel: ");
+    Serial.print(joint_state_.angular_velocity_);
+    Serial.print(" prev_encoder_ticks_");
+    Serial.print(prev_encoder_ticks_);    
+    Serial.print(" Encoder_ticks");
+    Serial.print(encoder_ticks);    
 
     prev_update_time_ = current_time;
     prev_encoder_ticks_ = encoder_ticks;

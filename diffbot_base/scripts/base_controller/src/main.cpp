@@ -15,7 +15,7 @@
 // #endif
 
 //#define ROSSERIAL_ARDUINO_TCP
-#define ESP32
+//#define ESP32
  
 //#include <WiFi.h>
 
@@ -279,7 +279,7 @@ std_msgs::String str_msg;
         
         // Call all the callbacks waiting to be called
         nh.spinOnce();
-        delay(50); // 20Hz
+        delay(500); // 20Hz
 
         /*
         if (nh.connected()) {  

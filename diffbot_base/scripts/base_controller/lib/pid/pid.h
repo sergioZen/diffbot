@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <time.h>
+
 namespace diffbot {
 
     class PID
@@ -25,6 +27,13 @@ namespace diffbot {
             double integral_;
             double derivative_;
             double prev_error_;
+
+            // Time variables
+            time_t last_time_;
+            double dt_ = 0.0;
+
+            // Tuning CQ Motors:
+            double threshold_ = 45.0;
     };
 }
 

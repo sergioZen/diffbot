@@ -14,10 +14,18 @@
 #define MOTOR_LEFT 1
 #define MOTOR_RIGHT 2
 
+/* PID diffbot orginal parameters */
 
 #define K_P 0.6 // P constant
 #define K_I 0.3 // I constant
 #define K_D 0.5 // D constant
+
+/* PID ros_arduino_firmware project parameters */
+/*
+#define K_P 20 // P constant
+#define K_I 0.3 // I constant
+#define K_D 12 // D constant
+*/
 
 #define PWM_BITS 8  // PWM Resolution of the microcontroller
 
