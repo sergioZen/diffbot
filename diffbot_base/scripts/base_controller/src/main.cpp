@@ -1,3 +1,4 @@
+//--------------------------------------------------------------------------------
 // ESP32 keep rebooting when trying to use rosserial:
 //
 // Change in: ~/Arduino/libraries/ros_lib/ros.h
@@ -13,11 +14,63 @@
 // #else
 //   #include "ArduinoHardware.h"
 // #endif
+//
+// RosSerial Error:
+// Add to ArduinoHarwdware.h:
+// #define SERIAL_CLASS HardwareSerial // Teensy HW Serial
+// #define USE_TEENSY_HW_SERIAL
+//
+//--------------------------------------------------------------------------------
 
 //#define ROSSERIAL_ARDUINO_TCP
 //#define ESP32
- 
+
+#define SERIAL_CLASS HardwareSerial // Teensy HW Serial
+#define USE_TEENSY_HW_SERIAL
+#define DEBUG
+
 //#include <WiFi.h>
+
+#ifdef DEBUG //Remove compiler optimizations for hardware debugging
+#pragma GCC optimize ("O0") 
+#endif
+
+#include <Arduino.h>
+#include "TeensyDebug.h"
+
+#define WAIT_FOR_DEBUGGER_SECONDS 120
+#define WAIT_FOR_SERIAL_SECONDS 20
+
+void setup(void)
+{
+    pinMode(LED_BUILTIN,OUTPUT);
+    bool debug_avail=false;
+    bool serial_avail=false;
+
+  debug.begin();
+  delay(3000);
+  Serial.begin(115200);
+  Serial1.begin(9600);
+  debug.begin(Serial1);
+
+
+    //Serial wait block
+    for (uint16_t i = 0; i < (WAIT_FOR_SERIAL_SECONDS*10); i++)
+    {
+            Serial.println("Serial ready.");
+            delay(500);
+            digitalWrite(LED_BUILTIN,!digitalRead(LED_BUILTIN));
+    }
+}
+
+   
+   void loop()
+   {
+    Serial.println("Serial loop.");
+   }
+
+
+
 
 #include <Arduino.h>
 #include <ros.h>
@@ -33,9 +86,22 @@
 #include "L298N_driver.h"
 #include "L298N_MotorShield.h"
 
+#include "TeensyDebug.h"
+#pragma GCC optimize ("O0")
+
 
 /* Include definition of serial commands */
 #include "commands.h"
+
+extern "C" {
+  // This must exist to keep the linker happy but is never called.
+  int _gettimeofday( struct timeval *tv, void *tzvp )
+  {
+    Serial.println("_gettimeofday dummy");
+    uint64_t t = 0;  // get uptime in nanoseconds
+    return 0;  // return non-zero for error
+  } // end _gettimeofday()
+}
  
 ros::NodeHandle nh;
 
@@ -46,7 +112,7 @@ L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 
 BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
-IPAddress server(192, 168, 3, 151);  // Ubuntu ROSCORE node: 192.168.3.151:11311
+//IPAddress server(192, 168, 3, 151);  // Ubuntu ROSCORE node: 192.168.3.151:11311
 const uint16_t serverPort = 11311;
 
 // Variable initialization:
@@ -212,16 +278,27 @@ int runCommand() {
     }
     */
 
-std_msgs::String str_msg;
-   ros::Publisher chatter("chatter", &str_msg);
+   /*
+    std_msgs::String str_msg;
+    ros::Publisher chatter("chatter", &str_msg);
    
-   char hello[13] = "hello world!";
+    char hello[13] = "hello world!";
    
     void setup()
     {
+        // Use the first serial port as you usually would
+        //Serial.begin(19200);
         //Serial.begin(57600);
         //Serial.println();
         //Serial.print("Connecting to ");
+
+        // Debugger will use second USB Serial; this line is not need if using menu option
+        //debug.begin(SerialUSB1);
+        debug.begin(Serial1);    // or use physical serial port
+
+        //halt_cpu();                 // stop on startup; if not, Teensy keeps running and you
+                                    // have to set a breakpoint or use Ctrl-C.
+
         nh.initNode();
         nh.advertise(chatter);
 
@@ -238,14 +315,12 @@ std_msgs::String str_msg;
    
    void loop()
    {
-      /*
-        str_msg.data = hello;
-        chatter.publish( &str_msg );
-        nh.spinOnce();
-        delay(1000);
-      */
+        // str_msg.data = hello;
+        // chatter.publish( &str_msg );
+        // nh.spinOnce();
+        // delay(1000);
 
-        static bool imu_is_initialized;
+        //static bool imu_is_initialized;
 
         // The main control loop for the base_conroller.
         // This block drives the robot based on a defined control rate
@@ -280,139 +355,5 @@ std_msgs::String str_msg;
         // Call all the callbacks waiting to be called
         nh.spinOnce();
         delay(500); // 20Hz
-
-        /*
-        if (nh.connected()) {  
-            // Call all the callbacks waiting to be called
-            nh.spinOnce();
-            delay(1000); // 20Hz
-            //Serial.print("\nOK Loop TCP-IP!!!");
-        }
-        else{
-            nh.initNode();
-            delay(500);
-            nh.logerror("Initialize DiffBot Motor Controllers");
-            //Serial.print(".");       
-        }
-        */
     }
-
-/*
-void setup()
-{
-    Serial.begin(115200);
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println("white");
-    WiFi.begin("white", "whitewhite!");
-    
-    while (WiFi.status() != WL_CONNECTED) // -> wifi delay -> a must -> other wise it will restart continuously 
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    delay(2000);
-
-    Serial.println("WiFi connected - IP address:  ");
-    Serial.println(WiFi.localIP());
-    
-    nh.getHardware()->setConnection(server, serverPort);
-    nh.initNode();
- 
-    // Definindo a conexão com o servidor do soquete (rosserial)
-    nh.getHardware() -> setConnection(server, serverPort);  
-    nh.initNode();
-    while (nh.getHardware() ->connected()!=1) {
-     
-        nh.getHardware() -> setConnection(server, serverPort);  
-        nh.initNode();
-        delay(50);
-        Serial.print(".");   
-    }
-
-    Serial.print("\nOK TCP-IP = ");
-    Serial.println(nh.getHardware() -> getLocalIP());
-    base_controller.setup();
-    Serial.println("Después setup");
-    base_controller.init();
-    Serial.println("Después setup e init");
-
-    nh.loginfo("Initialize DiffBot Motor Controllers");
-    motor_controller_left.begin();
-    motor_controller_right.begin();
-    nh.loginfo("Setup finished");
-}
-
-
-void loop()
-{
-    static bool imu_is_initialized;
-
-    if (nh.getHardware() ->connected()) {  
-        // The main control loop for the base_conroller.
-        // This block drives the robot based on a defined control rate
-        ros::Duration command_dt = nh.now() - base_controller.lastUpdateTime().control;
-        if (command_dt.toSec() >= ros::Duration(1.0 / base_controller.publishRate().control_, 0).toSec())
-        {
-            base_controller.read();
-            base_controller.write();
-            base_controller.lastUpdateTime().control = nh.now();
-        }
-
-        // This block stops the motor when no wheel command is received
-        // from the high level hardware_interface::RobotHW
-        command_dt = nh.now() - base_controller.lastUpdateTime().command_received;
-        if (command_dt.toSec() >= ros::Duration(E_STOP_COMMAND_RECEIVED_DURATION, 0).toSec())
-        {
-            nh.logwarn("Emergency STOP");
-            base_controller.eStop();
-        }
-
-        // This block publishes the IMU data based on a defined imu rate
-        ros::Duration imu_dt = nh.now() - base_controller.lastUpdateTime().imu;
-        if (imu_dt.toSec() >= base_controller.publishRate().period().imu_)
-        {
-            // Sanity check if the IMU is connected
-            if (!imu_is_initialized)
-            {
-                //imu_is_initialized = initIMU();
-                if(imu_is_initialized)
-                    nh.loginfo("IMU Initialized");
-                else
-                    nh.logfatal("IMU failed to initialize. Check your IMU connection.");
-            }
-            else
-            {
-                //publishIMU();
-            }
-            base_controller.lastUpdateTime().imu = nh.now();
-        }
-
-        // This block displays the encoder readings. change DEBUG to 0 if you don't want to display
-        if(base_controller.debug())
-        {
-            ros::Duration debug_dt = nh.now() - base_controller.lastUpdateTime().debug;
-            if (debug_dt.toSec() >= base_controller.publishRate().period().debug_)
-            {
-                base_controller.printDebug();
-                base_controller.lastUpdateTime().debug = nh.now();
-            }
-        }
-        
-        // Call all the callbacks waiting to be called
-        nh.spinOnce();
-        delay(1000); // 20Hz
-        Serial.print("\nOK Loop TCP-IP!!!");
-    }
-    else{
-        Serial.println("disconnected\n");
-        while (nh.getHardware() ->connected()!=1) {     
-            nh.getHardware() -> setConnection(server, serverPort);  
-            nh.initNode();
-            delay(50);
-            Serial.print(".");       
-        }
-    }
-}
-*/
-
+    */

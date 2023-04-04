@@ -5,7 +5,7 @@
 #ifndef DIFFBOT_ENCODER_H
 #define DIFFBOT_ENCODER_H
 
-#include <ESP32Encoder.h>
+#include <Encoder.h>
 
 #include <ros.h>
 
@@ -18,11 +18,25 @@ namespace diffbot
         double angular_velocity_;
     };
 
+
+    /** \brief Decorates the Teensy Encoder Library to read the angular wheel velocity
+     * from quadrature wheel encoders.
+     * 
+     * This class is composed of \ref ::Encoder from https://www.pjrc.com/teensy/td_libs_Encoder.html,
+     * which is capable of reading rising and falling edges of two Hall effect signals. This yields
+     * the highest possible tick count (encoder resolution) from the encoders.
+     * Take the DG01D-E motor/encoder, that has a 6 pole magnetic disk (observed with magnetic paper) and therefore 3 pulses per revolution (ppr).
+     * Reading both edges (rising and falling) of both channels in the code, we can observe roughly 542 ticks at the wheel output shaft.
+     * Because the DG01D-E motor/encoder has a 48:1 gear ratio (according to its datasheet) we round the tick count up to 576 counts per wheel revolution). 
+     * So 576 counts / 48:1 gear ratio / 2 channels / 2 edges = 3 pulses per revolution at the motor shaft. 
+     * Having an encoder with more ppr would increase the encoder resolution. For example let's say we we have an encoder with 7 ppr, 
+     * then we get the following output resolution at the wheel: 7 ppr (at motor shaft) * 48:1 gear ratio * 2 channels * 2 edges = 1344 ppr (measured at wheel).
+     */
     class Encoder
     {
     public:
         // Teensy Encoder class that is capable of reading rising and falling edges of two Hall effect signals.
-        ::ESP32Encoder encoder;
+        ::Encoder encoder;
 
         /** \brief Construct a diffbot::Encoder providing access to quadrature encoder ticks and angular joint velocity.
          * 
@@ -72,7 +86,7 @@ namespace diffbot
          * 
          * \returns encoder ticks
          */
-        inline int32_t read() { return encoder.getCount(); };
+        inline int32_t read() { return encoder.read(); };
 
         /** \brief Set the encoder tick count
          * 
@@ -80,7 +94,7 @@ namespace diffbot
          * 
          * \param p encoder ticks
          */
-        inline void write(int32_t p) { encoder.setCount(p); };
+        inline void write(int32_t p) { encoder.write(p); };
 
         /** \brief Setter for encoder resolution
          * 

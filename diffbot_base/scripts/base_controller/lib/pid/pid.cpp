@@ -29,8 +29,6 @@ double diffbot::PID::compute(float setpoint, float measured_value)
     if(setpoint == 0 && error == 0)
     {
         integral_ = 0;
-        //SBR:
-        return 0;
     }
 
     pid = (kp_ * proportional_); // + (ki_ * integral_) + (kd_ * derivative_);

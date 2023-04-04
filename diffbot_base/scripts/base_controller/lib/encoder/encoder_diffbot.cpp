@@ -1,25 +1,19 @@
 #include "encoder_diffbot.h"
 
+
 diffbot::Encoder::Encoder(ros::NodeHandle& nh, uint8_t pin1, uint8_t pin2, int encoder_resolution)
   : nh_(nh)
-//  , encoder(pin1, pin2)
+  , encoder(pin1, pin2)
   , encoder_resolution_(encoder_resolution)
   , prev_update_time_(0, 0)
   , prev_encoder_ticks_(0)
 {
-  // Enable the weak pull up resistors
-  ESP32Encoder::useInternalWeakPullResistors=UP;
 
-  // use pin 19 and 18 for the first encoder
-  encoder.attachHalfQuad(pin1, pin2);
-
-  // clear the encoder's raw count and set the tracked count to zero
-  encoder.clearCount();
 }
 
 diffbot::JointState diffbot::Encoder::jointState()
 {
-    long encoder_ticks = encoder.getCount();
+    long encoder_ticks = encoder.read();
     // This function calculates the motor's rotational (angular) velocity based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;
@@ -32,6 +26,8 @@ diffbot::JointState diffbot::Encoder::jointState()
     double delta_angle = ticksToAngle(delta_ticks);
 
     joint_state_.angular_position_ += delta_angle;
+
+
     joint_state_.angular_velocity_ = delta_angle / dts;
 
     Serial.print("dt: ");
@@ -72,7 +68,7 @@ double diffbot::Encoder::ticksToAngle(const int &ticks) const
 
 int diffbot::Encoder::getRPM()
 {
-    long encoder_ticks = encoder.getCount();
+    long encoder_ticks = encoder.read();
     //this function calculates the motor's RPM based on encoder ticks and delta time
     ros::Time current_time = nh_.now();
     ros::Duration dt = current_time - prev_update_time_;

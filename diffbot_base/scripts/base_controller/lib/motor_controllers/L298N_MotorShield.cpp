@@ -34,8 +34,8 @@ L298N_MotorShield::L298N_MotorShield(){};
 */
 /**************************************************************************/
 bool L298N_MotorShield::begin() {
-  digitalWrite(RIGHT_MOTOR_ENABLE, HIGH);
-  digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
+  //digitalWrite(RIGHT_MOTOR_ENABLE, HIGH);
+  //digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
   return true;
 }
 

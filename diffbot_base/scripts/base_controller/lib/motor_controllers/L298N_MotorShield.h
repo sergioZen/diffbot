@@ -3,14 +3,14 @@
 
 #include <inttypes.h>
 
-#define RIGHT_MOTOR_FORWARD  27
-#define RIGHT_MOTOR_BACKWARD 14
+#define RIGHT_MOTOR_FORWARD  9
+#define RIGHT_MOTOR_BACKWARD 10
 
-#define LEFT_MOTOR_FORWARD   12
-#define LEFT_MOTOR_BACKWARD  13
+#define LEFT_MOTOR_FORWARD   3
+#define LEFT_MOTOR_BACKWARD  4
 
-#define RIGHT_MOTOR_ENABLE 12
-#define LEFT_MOTOR_ENABLE 13
+#define RIGHT_MOTOR_ENABLE 0
+#define LEFT_MOTOR_ENABLE 0
 
 class L298N_MotorShield;
 
