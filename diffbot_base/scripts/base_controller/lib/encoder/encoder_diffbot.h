@@ -34,6 +34,10 @@ namespace diffbot
      */
     class Encoder
     {
+    private:
+        // ROS node handle, which provides the current time to compute the angular velocity from the current tick count
+        ros::NodeHandle& nh_;
+
     public:
         // Teensy Encoder class that is capable of reading rising and falling edges of two Hall effect signals.
         ::Encoder encoder;
@@ -115,8 +119,6 @@ namespace diffbot
         JointState joint_state_;
 
     private:
-        // ROS node handle, which provides the current time to compute the angular velocity from the current tick count
-        ros::NodeHandle& nh_;
         // Number of tick counts for one full revolution of the wheel (not the motor shaft). Keep track of gear reduction ratio.
         int encoder_resolution_;
         // Previous time when the \ref getRPM or \ref angularVelocity method was called to calculated the delta update time.

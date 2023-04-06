@@ -39,7 +39,7 @@ diffbot::JointState diffbot::Encoder::jointState()
     Serial.print(" prev_encoder_ticks_");
     Serial.print(prev_encoder_ticks_);    
     Serial.print(" Encoder_ticks");
-    Serial.print(encoder_ticks);    
+    Serial.println(encoder_ticks);    
 
     prev_update_time_ = current_time;
     prev_encoder_ticks_ = encoder_ticks;

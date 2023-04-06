@@ -76,6 +76,9 @@ namespace diffbot {
     template <typename TMotorController, typename TMotorDriver>
     class BaseController
     {
+    private:
+        // Reference to global node handle from main.cpp
+        ros::NodeHandle& nh_;        
     public:
 
         /**
@@ -321,9 +324,6 @@ namespace diffbot {
         void pidRightCallback(const diffbot_msgs::PIDStamped& pid_msg);
 
     private:
-        // Reference to global node handle from main.cpp
-        ros::NodeHandle& nh_;
-
         // constants
         float wheel_radius_ = 0.0;
         float max_linear_velocity_ = 0.0;
@@ -384,14 +384,14 @@ template <typename TMotorController, typename TMotorDriver>
 diffbot::BaseController<TMotorController, TMotorDriver>
     ::BaseController(ros::NodeHandle &nh, TMotorController* motor_controller_left, TMotorController* motor_controller_right)
     : nh_(nh)
+    , update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
+    , last_update_time_(nh.now())
     , encoder_left_(nh, ENCODER_LEFT_H1, ENCODER_LEFT_H2, ENCODER_RESOLUTION)
     , encoder_right_(nh, ENCODER_RIGHT_H1, ENCODER_RIGHT_H2, ENCODER_RESOLUTION)
     , sub_reset_encoders_("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
     , pub_encoders_("encoder_ticks", &encoder_msg_)
     , pub_measured_joint_states_("measured_joint_states", &msg_measured_joint_states_)
     , sub_wheel_cmd_velocities_("diffbot/wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
-    , last_update_time_(nh.now())
-    , update_rate_(UPDATE_RATE_IMU, UPDATE_RATE_CONTROL, UPDATE_RATE_DEBUG)
     , sub_pid_left_("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
     , sub_pid_right_("pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this)
     , motor_pid_left_(PWM_MIN, PWM_MAX, K_P, K_I, K_D)
