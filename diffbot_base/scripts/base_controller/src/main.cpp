@@ -21,10 +21,10 @@
 // #define USE_TEENSY_HW_SERIAL
 //
 //--------------------------------------------------------------------------------
-
 //#define ROSSERIAL_ARDUINO_TCP
 //#define ESP32
 
+/*
 #define SERIAL_CLASS HardwareSerial // Teensy HW Serial
 #define USE_TEENSY_HW_SERIAL
 #undef DEBUG
@@ -34,23 +34,22 @@
 #define WAIT_FOR_DEBUGGER_SECONDS 120
 #define WAIT_FOR_SERIAL_SECONDS 20
 
-#include <Arduino.h>
 
 #ifdef DEBUG //Remove compiler optimizations for hardware debugging
 #pragma GCC optimize ("O0") 
 #include "TeensyDebug.h"
 #endif
+*/
+
 
 #include <ros.h>
-#include <std_msgs/String.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Int16.h>
 
 #include "diffbot_base_config.h"
 #include "base_controller.h"
 #include "L298N_driver.h"
 #include "L298N_MotorShield.h"
 
+/*
 extern "C" {
   // This must exist to keep the linker happy but is never called.
   int _gettimeofday( struct timeval *tv, void *tzvp )
@@ -60,6 +59,7 @@ extern "C" {
     return 0;  // return non-zero for error
   } // end _gettimeofday()
 }
+*/
  
 ros::NodeHandle nh;
 
@@ -71,54 +71,9 @@ L298NMotorController motor_controller_left = L298NMotorController(MOTOR_LEFT);
 BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &motor_controller_left, &motor_controller_right);
 
 
-//SBR: working and sending messages to rostopic echo chatter
-std_msgs::String str_msg;
-ros::Publisher chatter("chatter", &str_msg);
-
-char hello[13] = "hello world!";
-
 void setup()
 {
-    //Serial.begin(57600);
-    //Serial.println();
-    //Serial.print("Connecting to ");
-
-    Serial1.begin(57600);
-
-    nh.initNode();
-    nh.advertise(chatter);
-
-    delay(1000);
-}
-
-void loop()
-{
-    str_msg.data = hello;
-    chatter.publish( &str_msg );
-    nh.spinOnce();
-    delay(1000);
-
-    if (nh.connected()) {  
-        // Call all the callbacks waiting to be called
-        nh.spinOnce();
-        delay(1000); // 20Hz
-        //Serial.print("\nOK Loop TCP-IP!!!");
-    }
-    else{
-        nh.initNode();
-        delay(500);
-        nh.logerror("Initialize DiffBot Motor Controllers");
-        //Serial.print(".");       
-    }
-}
-
-/*
-void setup()
-{
-    // Use the first serial port as you usually would
-    Serial.begin(57600);
-    Serial.println("Connecting to ");
-
+	/*
     // Debugger will use second USB Serial; this line is not need if using menu option
     debug.begin();
     delay(3000);
@@ -127,25 +82,21 @@ void setup()
     // Debugger will use second USB Serial; this line is not need if using menu option
     debug.begin(SerialUSB1);
     // debug.begin(Serial1);   // or use physical serial port
-
-    //halt_cpu();                 // stop on startup; if not, Teensy keeps running and you
-    //                            // have to set a breakpoint or use Ctrl-C.
-    nh.initNode();
-
-    delay(1000);
+	*/
 
     base_controller.setup();
     base_controller.init();
 
-    nh.logerror("Initialize DiffBot Motor Controllers");
+    nh.loginfo("Initialize DiffBot Motor Controllers");
     motor_controller_left.begin();
     motor_controller_right.begin();
-    nh.logdebug("Setup finished");        
+    nh.loginfo("Setup finished");
 }
+
 
 void loop()
 {
-    //static bool imu_is_initialized;
+    static bool imu_is_initialized;
 
     // The main control loop for the base_conroller.
     // This block drives the robot based on a defined control rate
@@ -166,6 +117,26 @@ void loop()
         base_controller.eStop();
     }
 
+    // This block publishes the IMU data based on a defined imu rate
+    ros::Duration imu_dt = nh.now() - base_controller.lastUpdateTime().imu;
+    if (imu_dt.toSec() >= base_controller.publishRate().period().imu_)
+    {
+        // Sanity check if the IMU is connected
+        if (!imu_is_initialized)
+        {
+            //imu_is_initialized = initIMU();
+            if(imu_is_initialized)
+                nh.loginfo("IMU Initialized");
+            else
+                nh.logfatal("IMU failed to initialize. Check your IMU connection.");
+        }
+        else
+        {
+            //publishIMU();
+        }
+        base_controller.lastUpdateTime().imu = nh.now();
+    }
+
     // This block displays the encoder readings. change DEBUG to 0 if you don't want to display
     if(base_controller.debug())
     {
@@ -176,9 +147,6 @@ void loop()
             base_controller.lastUpdateTime().debug = nh.now();
         }
     }
-    
     // Call all the callbacks waiting to be called
     nh.spinOnce();
-    delay(500); // 20Hz
 }
-*/

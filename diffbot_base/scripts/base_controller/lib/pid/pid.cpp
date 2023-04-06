@@ -24,15 +24,14 @@ double diffbot::PID::compute(float setpoint, float measured_value)
     error = setpoint - measured_value;
     proportional_ = error;
     integral_ += error * dt_;
-    derivative_ = (error - prev_error_) / dt_;
+    derivative_ = (error - prev_error_) * dt_;
 
     if(setpoint == 0 && error == 0)
     {
         integral_ = 0;
     }
 
-    pid = (kp_ * proportional_); // + (ki_ * integral_) + (kd_ * derivative_);
-
+    pid = (kp_ * proportional_) + (ki_ * integral_) + (kd_ * derivative_);
     prev_error_ = error;
     last_time_ = time (NULL);
 

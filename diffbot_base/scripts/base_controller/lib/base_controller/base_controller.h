@@ -405,6 +405,7 @@ diffbot::BaseController<TMotorController, TMotorDriver>
 template <typename TMotorController, typename TMotorDriver>
 void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
 {
+    nh_.initNode();
     nh_.advertise(pub_encoders_);
 
     // msg_measured_joint_states_ is of type sensor_msgs::JointState
@@ -424,14 +425,10 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     nh_.subscribe(sub_pid_left_);
     nh_.subscribe(sub_pid_right_);
 
-    /*
     while (!nh_.connected())
     {
-        delay(500);
-        Serial.print(".");
         nh_.spinOnce();
     }
-    */
 }
 
 template <typename TMotorController, typename TMotorDriver>
