@@ -36,7 +36,45 @@ L298N_MotorShield::L298N_MotorShield(){};
 bool L298N_MotorShield::begin() {
   //digitalWrite(RIGHT_MOTOR_ENABLE, HIGH);
   //digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
+  pinMode(RIGHT_MOTOR_FORWARD, OUTPUT);
+  pinMode(RIGHT_MOTOR_BACKWARD, OUTPUT);
+  pinMode(LEFT_MOTOR_FORWARD, OUTPUT);
+  pinMode(LEFT_MOTOR_BACKWARD, OUTPUT);
+
   return true;
+}
+
+/**************************************************************************/
+/*!
+    @brief  Helper that sets the PWM output on a pin and manages 'all on or off'
+    @param  pin The PWM output on the driver that we want to control (0-15)
+    @param  value The 12-bit PWM value we want to set (0-4095) - 4096 is a
+   special 'all on' value
+*/
+/**************************************************************************/
+void L298N_MotorShield::setPWM(uint8_t pin, uint16_t value) {
+
+  // Threshold for the QCiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii Motors:
+  value = value + 45;
+
+  if (value > 255) {
+    analogWrite(pin, 255);
+  } else
+    analogWrite(pin, value);
+}
+
+/**************************************************************************/
+/*!
+    @brief  Helper that sets the PWM output on a pin as if it were a GPIO
+    @param  pin The PWM output on the driver that we want to control (0-15)
+    @param  value HIGH or LOW depending on the value you want!
+*/
+/**************************************************************************/
+void L298N_MotorShield::setPin(uint8_t pin, int val) {
+  if (val == LOW)
+    digitalWrite(pin, LOW);
+  else
+    digitalWrite(pin, HIGH);
 }
 
 /**************************************************************************/
@@ -57,19 +95,25 @@ L298N_DCMotor *L298N_MotorShield::getMotor(uint8_t num) {
     // not init'd yet!
     dcmotors[num].motornum = num;
     dcmotors[num].MC = this;
-    uint8_t in1, in2;
+    uint8_t pwm, in1, in2;
     switch (num) {
     case 0:
-      in2 = LEFT_MOTOR_FORWARD;
-      in1 = LEFT_MOTOR_BACKWARD;
+      pwm = LEFT_MOTOR_PWM;
+      in1 = LEFT_MOTOR_FORWARD;
+      in2 = LEFT_MOTOR_BACKWARD;
       break;
     case 1:
-      in2 = RIGHT_MOTOR_FORWARD;
-      in1 = RIGHT_MOTOR_BACKWARD;
+      pwm = RIGHT_MOTOR_PWM;
+      in1 = RIGHT_MOTOR_FORWARD;
+      in2 = RIGHT_MOTOR_BACKWARD;
       break;
     default:
+      pwm = 0;
+      in1 = 0;
+      in2 = 0;    
       break;
     }
+    dcmotors[num].PWMpin = pwm;    
     dcmotors[num].IN1pinForward = in1;
     dcmotors[num].IN2pinBackwards = in2;
   }
@@ -90,7 +134,30 @@ L298N_DCMotor *L298N_MotorShield::getMotor(uint8_t num) {
 L298N_DCMotor::L298N_DCMotor(void) {
   MC = NULL;
   motornum = 0;
-  IN1pinForward = IN2pinBackwards = 0;
+  PWMpin = IN1pinForward = IN2pinBackwards = 0;
+}
+
+/**************************************************************************/
+/*!
+    @brief  Control the DC Motor direction and action
+    @param  cmd The action to perform, can be FORWARD, BACKWARD or RELEASE
+*/
+/**************************************************************************/
+void L298N_DCMotor::run(uint8_t cmd) {
+  switch (cmd) {
+  case FORWARD:
+    MC->setPin(IN2pinBackwards, LOW); // take low first to avoid 'break'
+    MC->setPin(IN1pinForward, HIGH);
+    break;
+  case BACKWARD:
+    MC->setPin(IN1pinForward, LOW); // take low first to avoid 'break'
+    MC->setPin(IN2pinBackwards, HIGH);
+    break;
+  case RELEASE:
+    MC->setPin(IN1pinForward, LOW);
+    MC->setPin(IN2pinBackwards, LOW);
+    break;
+  }
 }
 
 /**************************************************************************/
@@ -99,25 +166,8 @@ L298N_DCMotor::L298N_DCMotor(void) {
     @param  speed The 8-bit PWM value, 0 is off, 255 is on
 */
 /**************************************************************************/
-void L298N_DCMotor::setSpeed(uint8_t speed) {
-   unsigned char reverse = 0;
-
-   if (speed < 0)
-   {
-      speed = -speed;
-      reverse = 1;
-   }
-   if (speed > 255)
-      speed = 255;
-
-   if (reverse == 0)
-   {
-      analogWrite(IN1pinForward, speed); analogWrite(IN2pinBackwards, 0);
-   }
-   else if (reverse == 1)
-   {
-      analogWrite(IN2pinBackwards, speed); analogWrite(IN1pinForward, 0); 
-   }
+void L298N_DCMotor::setSpeed(int speed) {
+  MC->setPWM(PWMpin, speed);
 }
 
 void L298N_DCMotor::setPinForward(uint8_t pin) {

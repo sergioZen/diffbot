@@ -27,39 +27,39 @@
 /*
 #define SERIAL_CLASS HardwareSerial // Teensy HW Serial
 #define USE_TEENSY_HW_SERIAL
-#undef DEBUG
-
-//#include <WiFi.h>
-
+#define DEBUG
 #define WAIT_FOR_DEBUGGER_SECONDS 120
 #define WAIT_FOR_SERIAL_SECONDS 20
-
-
 #ifdef DEBUG //Remove compiler optimizations for hardware debugging
 #pragma GCC optimize ("O0") 
+#include "Arduino.h"
 #include "TeensyDebug.h"
 #endif
 */
 
+//#include <WiFi.h>
 
 #include <ros.h>
 
 #include "diffbot_base_config.h"
 #include "base_controller.h"
 #include "L298N_driver.h"
-#include "L298N_MotorShield.h"
 
-/*
-extern "C" {
-  // This must exist to keep the linker happy but is never called.
-  int _gettimeofday( struct timeval *tv, void *tzvp )
-  {
-    //Serial.println("_gettimeofday dummy");
-    //uint64_t t = 0;  // get uptime in nanoseconds
-    return 0;  // return non-zero for error
-  } // end _gettimeofday()
+extern "C" int _gettimeofday(struct timeval *tv, void *ignore) {
+  uint32_t hi1 = SNVS_HPRTCMR;
+  uint32_t lo1 = SNVS_HPRTCLR;
+  while (1) {
+    uint32_t hi2 = SNVS_HPRTCMR;  // ref manual 20.3.3.1.3 page 1231
+    uint32_t lo2 = SNVS_HPRTCLR;
+    if (lo1 == lo2 && hi1 == hi2) {
+      tv->tv_sec = (hi2 << 17) | (lo2 >> 15);
+      tv->tv_usec = ((lo2 & 0x7FFF) * 15625) >> 9;
+      return 0;
+    }
+    hi1 = hi2;
+    lo1 = lo2;
+  }
 }
-*/
  
 ros::NodeHandle nh;
 
@@ -73,17 +73,16 @@ BaseController<L298NMotorController, L298N_MotorShield> base_controller(nh, &mot
 
 void setup()
 {
-	/*
+    /*
+    // START DEBUG
     // Debugger will use second USB Serial; this line is not need if using menu option
     debug.begin();
     delay(3000);
-
     Serial1.begin(9600);
-    // Debugger will use second USB Serial; this line is not need if using menu option
     debug.begin(SerialUSB1);
-    // debug.begin(Serial1);   // or use physical serial port
-	*/
-
+    // END DEBUG
+    */
+ 
     base_controller.setup();
     base_controller.init();
 
@@ -93,10 +92,9 @@ void setup()
     nh.loginfo("Setup finished");
 }
 
-
 void loop()
 {
-    static bool imu_is_initialized;
+    //static bool imu_is_initialized;
 
     // The main control loop for the base_conroller.
     // This block drives the robot based on a defined control rate
@@ -118,6 +116,7 @@ void loop()
     }
 
     // This block publishes the IMU data based on a defined imu rate
+    /*
     ros::Duration imu_dt = nh.now() - base_controller.lastUpdateTime().imu;
     if (imu_dt.toSec() >= base_controller.publishRate().period().imu_)
     {
@@ -136,6 +135,7 @@ void loop()
         }
         base_controller.lastUpdateTime().imu = nh.now();
     }
+    */
 
     // This block displays the encoder readings. change DEBUG to 0 if you don't want to display
     if(base_controller.debug())
@@ -147,6 +147,8 @@ void loop()
             base_controller.lastUpdateTime().debug = nh.now();
         }
     }
+
     // Call all the callbacks waiting to be called
     nh.spinOnce();
+    delay(300);
 }

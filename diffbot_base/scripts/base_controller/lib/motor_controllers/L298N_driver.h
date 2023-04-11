@@ -14,7 +14,7 @@
 
 #include <motor_controller_interface.h>
 
-using namespace diffbot;
+namespace diffbot{ 
 
     /** \brief Implementation of the MotorControllerIntf for the Adafruit_MotorShield
      * 
@@ -72,6 +72,5 @@ using namespace diffbot;
             // Pointer to the motor that is controlled by this motor controller.
             L298N_DCMotor *pMotor_;
     };
-
-
+}
 #endif // L298N_DRIVER_MOTOR_CONTROLLER_H

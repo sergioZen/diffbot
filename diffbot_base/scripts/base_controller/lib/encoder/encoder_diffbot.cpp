@@ -30,18 +30,18 @@ diffbot::JointState diffbot::Encoder::jointState()
 
     joint_state_.angular_velocity_ = delta_angle / dts;
 
-	/*
-    Serial.print("dt: ");
-    Serial.print(dts);
-    Serial.print(" Delta_angle: ");
-    Serial.print(delta_angle);
-    Serial.print(" Angular vel: ");
-    Serial.print(joint_state_.angular_velocity_);
-    Serial.print(" prev_encoder_ticks_");
-    Serial.print(prev_encoder_ticks_);    
-    Serial.print(" Encoder_ticks");
-    Serial.println(encoder_ticks);
-	*/
+    String log_msg =
+            String("\nEncoder dt_: <") + String(dts) 
+            + String(" Delta_angle: ")
+            + String(delta_angle)
+            + String(" Angular vel: ")
+            + String(joint_state_.angular_velocity_)
+            + String(" prev_encoder_ticks_")
+            + String(prev_encoder_ticks_) 
+            + String(" Encoder_ticks")
+            + String(encoder_ticks);
+
+    nh_.loginfo(log_msg.c_str());      
 
     prev_update_time_ = current_time;
     prev_encoder_ticks_ = encoder_ticks;

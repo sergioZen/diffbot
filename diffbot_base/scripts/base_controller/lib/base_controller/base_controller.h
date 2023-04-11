@@ -16,7 +16,7 @@
 
 #include "diffbot_base_config.h"
 #include "encoder_diffbot.h"
-#include <motor_controller_interface.h>
+#include <L298N_driver.h>
 #include "pid.h"
 
 
@@ -394,8 +394,8 @@ diffbot::BaseController<TMotorController, TMotorDriver>
     , sub_wheel_cmd_velocities_("diffbot/wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
     , sub_pid_left_("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
     , sub_pid_right_("pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this)
-    , motor_pid_left_(PWM_MIN, PWM_MAX, K_P, K_I, K_D)
-    , motor_pid_right_(PWM_MIN, PWM_MAX, K_P, K_I, K_D)
+    , motor_pid_left_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D)
+    , motor_pid_right_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D)
 {
     p_motor_controller_left_ = motor_controller_left;
     p_motor_controller_right_ = motor_controller_right;
@@ -536,10 +536,12 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::read()
     
     pub_encoders_.publish(&encoder_msg_);    
 
+    /*
     if(debug())
     {
         nh_.loginfo("Publish pub_encoders & pub_measured_joint_states");
-    } 
+    }
+    */
 }
 
 template <typename TMotorController, typename TMotorDriver>
@@ -564,7 +566,8 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::write()
     p_motor_controller_right_->setSpeed(motor_cmd_right_);
 
     String log_msg = 
-                String("Set: MEASURED VAL ang_vel: ") + String(joint_state_left_.angular_velocity_) + 
+                String("dt: ") + String(motor_pid_left_.dt()) + 
+                String(" Set: MEASURED VAL ang_vel: ") + String(joint_state_left_.angular_velocity_) + 
                 String(" SETPOINT w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
                 String(" OUTPUT cmd_left_: ") + String(motor_cmd_left_) + 
                 String(" MEASURED VAL ang_vel: ") + String(joint_state_right_.angular_velocity_) + 
