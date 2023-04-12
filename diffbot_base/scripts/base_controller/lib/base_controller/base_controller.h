@@ -413,10 +413,19 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     // For rosserial to work it is required to reserve the memory using malloc
     // and setting the *_length member appropriately.
     // http://wiki.ros.org/rosserial/Overview/Limitations#Arrays
+    msg_measured_joint_states_.header.frame_id = "base_footprint";
+
+    // Fill in the joint names
+    char *names[] = {"front_left_wheel_joint", "front_right_wheel_joint"};
+    msg_measured_joint_states_.name = names;
+    msg_measured_joint_states_.name_length = 2;
+
     msg_measured_joint_states_.position = (float*)malloc(sizeof(float) * 2);
     msg_measured_joint_states_.position_length = 2;
     msg_measured_joint_states_.velocity = (float*)malloc(sizeof(float) * 2);
     msg_measured_joint_states_.velocity_length = 2;
+    msg_measured_joint_states_.effort = (float*)malloc(sizeof(float) * 2);
+    msg_measured_joint_states_.effort_length = 2;
     nh_.advertise(pub_measured_joint_states_);
 
     nh_.subscribe(sub_wheel_cmd_velocities_);
@@ -516,6 +525,12 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::read()
 {
     joint_state_left_ = encoder_left_.jointState();
     joint_state_right_ = encoder_right_.jointState();
+
+    msg_measured_joint_states_.header.stamp = nh_.now();
+
+    // Fill in the joint efforts
+    msg_measured_joint_states_.effort[0] = 0.0;
+    msg_measured_joint_states_.effort[1] = 0.0;
 
     msg_measured_joint_states_.position[0] = joint_state_left_.angular_position_;
     msg_measured_joint_states_.position[1] = joint_state_right_.angular_position_;

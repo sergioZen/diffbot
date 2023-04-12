@@ -1,12 +1,14 @@
 <launch>
 
+   <arg name="laser_frame_id" default="rplidar_laser_link" />
+
    <include file="$(find wit_node)/launch/wit_node.launch"/>
 
    <include file="$(find diffbot_bringup)/launch/rplidar.launch" ns="diffbot">
       <arg name="laser_frame_id" value="$(arg laser_frame_id)" />
    </include>
-
+<!--
    <node name="rosserial_base_controller" pkg="rosserial_python" type="serial_node.py"
-         respawn="false" output="screen" ns="diffbot" args="_port:=/dev/ttyACM0 _baud:=115200"/>
+         respawn="false" output="screen" ns="diffbot" args="_port:=/dev/ttyACM0 _baud:=115200"/>-->
 
 </launch>
