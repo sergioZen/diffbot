@@ -416,8 +416,10 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     msg_measured_joint_states_.header.frame_id = "base_footprint";
 
     // Fill in the joint names
-    char *names[] = {"front_left_wheel_joint", "front_right_wheel_joint"};
-    msg_measured_joint_states_.name = names;
+    char *names[] = {const_cast<char*>("front_left_wheel_joint"), const_cast<char*>("front_right_wheel_joint")};
+    msg_measured_joint_states_.name = (char)malloc(100);
+    msg_measured_joint_states_.name[0] = names[0];
+    msg_measured_joint_states_.name[1] = names[1];
     msg_measured_joint_states_.name_length = 2;
 
     msg_measured_joint_states_.position = (float*)malloc(sizeof(float) * 2);
