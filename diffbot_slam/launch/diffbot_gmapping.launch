@@ -7,7 +7,7 @@
   <arg name="set_map_frame"  default="map"/>
   <!-- gmapping expects the laser scan on the scan topic 
        but DiffBot provides this in the diffbot namespace -->
-  <arg name="scan_topic"  default="diffbot/scan"/>
+  <arg name="scan_topic"  default="/diffbot/scan"/>
 
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="diffbot_slam_gmapping" output="screen">

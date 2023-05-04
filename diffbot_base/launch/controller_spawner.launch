@@ -8,10 +8,6 @@
     <!-- Load the URDF model of DiffBot into the ROS Parameter Server -->
     <param name="diffbot/robot_description" command="$(arg urdf_file)" />
 
-    <!-- Run the diffbot_base -->
-    <!-- This will create the DiffBot hardware interface and instantiate a new controller manager with it -->
-    <node name="diffbot_base" pkg="diffbot_base" type="diffbot_base" ns="diffbot" output="screen"/>
-
     <!-- Load controller config to the parameter server -->
     <rosparam command="load" 
               file="$(find diffbot_control)/config/diffbot_control.yaml"/>
@@ -22,12 +18,9 @@
 
     <!-- Load the controllers -->
     <!-- This will use the controller manager that got started inside the difbot_base node -->
-    <!--
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
         output="screen" ns="diffbot" args="joint_state_controller
-                                           mobile_base_controller">
-      <remap from="/cmd_vel" to="/diffbot/mobile_base_controller/cmd_vel"/>
-    </node>-->
+                                           mobile_base_controller"/>
 
   <!-- rqt_plot monitoring -->
   <!--

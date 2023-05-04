@@ -55,7 +55,7 @@
     <parent link="${parent_link}"/>
     <child link="${prefix}_laser_link"/>
     <origin xyz="${sensor_prop['laser']['dx']} ${sensor_prop['laser']['dy']} ${sensor_prop['laser']['dz']}" rpy="0 0 ${pi}"/>
-    <axis xyz="0 1 0" />
+    <axis xyz="0 0 0" />
   </joint>
 
   <!-- hokuyo gazebo references -->
@@ -240,11 +240,11 @@
   </gazebo>
 
   <joint name="imu_joint" type="fixed">
-    <!-- SBR:   <xacro:insert_block name="joint_origin" />-->
-    <!--<origin xyz="${sensor_prop['imu']['dx']} ${sensor_prop['imu']['dy']} ${sensor_prop['imu']['dz']}" rpy="0 0 0"/>-->
-    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${parent_link}"/>
-    <child link="imu_link"/>
+    <child link="imu_link"/>    
+    <!--<origin xyz="${sensor_prop['imu']['dx']} ${sensor_prop['imu']['dy']} ${sensor_prop['imu']['dz']}" rpy="0 0 0"/>-->
+    <origin xyz="0 0 0.01" rpy="0 0 0"/>
+    <axis xyz="0 1 0" />
   </joint>
 
   <gazebo reference="imu_link">
