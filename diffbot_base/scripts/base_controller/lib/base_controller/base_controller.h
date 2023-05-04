@@ -388,14 +388,14 @@ diffbot::BaseController<TMotorController, TMotorDriver>
     , last_update_time_(nh.now())
     , encoder_left_(nh, ENCODER_LEFT_H1, ENCODER_LEFT_H2, ENCODER_RESOLUTION)
     , encoder_right_(nh, ENCODER_RIGHT_H1, ENCODER_RIGHT_H2, ENCODER_RESOLUTION)
-    , sub_reset_encoders_("reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
-    , pub_encoders_("encoder_ticks", &encoder_msg_)
-    , pub_measured_joint_states_("measured_joint_states", &msg_measured_joint_states_)
+    , sub_reset_encoders_("diffbot/reset", &BC<TMotorController, TMotorDriver>::resetEncodersCallback, this)
+    , pub_encoders_("diffbot/encoder_ticks", &encoder_msg_)
+    , pub_measured_joint_states_("diffbot/measured_joint_states", &msg_measured_joint_states_)
     , sub_wheel_cmd_velocities_("diffbot/wheel_cmd_velocities", &BC<TMotorController, TMotorDriver>::commandCallback, this)
-    , sub_pid_left_("pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
-    , sub_pid_right_("pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this)
-    , motor_pid_left_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D)
-    , motor_pid_right_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D)
+    , sub_pid_left_("diffbot/pid_left", &BC<TMotorController, TMotorDriver>::pidLeftCallback, this)
+    , sub_pid_right_("diffbot/pid_right", &BC<TMotorController, TMotorDriver>::pidRightCallback, this)
+    , motor_pid_left_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D, debug_)
+    , motor_pid_right_(nh, PWM_MIN, PWM_MAX, K_P, K_I, K_D, debug_)
 {
     p_motor_controller_left_ = motor_controller_left;
     p_motor_controller_right_ = motor_controller_right;
@@ -416,11 +416,13 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::setup()
     msg_measured_joint_states_.header.frame_id = "base_footprint";
 
     // Fill in the joint names
+    /*
     char *names[] = {const_cast<char*>("front_left_wheel_joint"), const_cast<char*>("front_right_wheel_joint")};
     msg_measured_joint_states_.name = (char)malloc(100);
     msg_measured_joint_states_.name[0] = names[0];
     msg_measured_joint_states_.name[1] = names[1];
     msg_measured_joint_states_.name_length = 2;
+    */
 
     msg_measured_joint_states_.position = (float*)malloc(sizeof(float) * 2);
     msg_measured_joint_states_.position_length = 2;
@@ -481,9 +483,12 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::commandCallback(co
     wheel_cmd_velocity_left_ = cmd_msg.wheels_cmd.angular_velocities.joint[0];
     wheel_cmd_velocity_right_ = cmd_msg.wheels_cmd.angular_velocities.joint[1];
 
-    String log_msg = String("Rcv: w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
+    if(debug_)
+    { 
+        String log_msg = String("Rcv: w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
                 String(" w_cmd_vel_right_: ") + String(wheel_cmd_velocity_right_);
-    nh_.loginfo(log_msg.c_str());    
+        nh_.loginfo(log_msg.c_str());    
+    } 
 
     // Used for the eStop. In case no diffbot_msgs::WheelsCmdStamped messages are received on the wheel_cmd_velocities 
     // topic, the eStop method is called (see main loop in main.cpp)
@@ -582,15 +587,18 @@ void diffbot::BaseController<TMotorController, TMotorDriver>::write()
     p_motor_controller_left_->setSpeed(motor_cmd_left_);
     p_motor_controller_right_->setSpeed(motor_cmd_right_);
 
-    String log_msg = 
-                String("dt: ") + String(motor_pid_left_.dt()) + 
-                String(" Set: MEASURED VAL ang_vel: ") + String(joint_state_left_.angular_velocity_) + 
-                String(" SETPOINT w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
-                String(" OUTPUT cmd_left_: ") + String(motor_cmd_left_) + 
-                String(" MEASURED VAL ang_vel: ") + String(joint_state_right_.angular_velocity_) + 
-                String(" SETPOINT w_cmd_ve_right_: ") + String(wheel_cmd_velocity_right_) + 
-                String(" OUTPUT cmd_right_: ") + String(motor_cmd_right_);
-    nh_.loginfo(log_msg.c_str());
+    if(debug_)
+    { 
+        String log_msg = 
+                    String("dt: ") + String(motor_pid_left_.dt()) + 
+                    String(" Set: MEASURED VAL ang_vel: ") + String(joint_state_left_.angular_velocity_) + 
+                    String(" SETPOINT w_cmd_vel_left_: ") + String(wheel_cmd_velocity_left_) + 
+                    String(" OUTPUT cmd_left_: ") + String(motor_cmd_left_) + 
+                    String(" MEASURED VAL ang_vel: ") + String(joint_state_right_.angular_velocity_) + 
+                    String(" SETPOINT w_cmd_ve_right_: ") + String(wheel_cmd_velocity_right_) + 
+                    String(" OUTPUT cmd_right_: ") + String(motor_cmd_right_);
+        nh_.loginfo(log_msg.c_str());
+    } 
 }
 
 template <typename TMotorController, typename TMotorDriver>

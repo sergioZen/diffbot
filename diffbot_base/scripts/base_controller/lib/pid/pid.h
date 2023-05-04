@@ -11,7 +11,7 @@ namespace diffbot {
     class PID
     {
     public:
-        PID(ros::NodeHandle& nh, float min_val, float max_val, float kp, float ki, float kd);
+        PID(ros::NodeHandle& nh, float min_val, float max_val, float kp, float ki, float kd, bool debug);
         double compute(float setpoint, float measured_value);
         void updateConstants(float kp, float ki, float kd);
 
@@ -32,6 +32,7 @@ namespace diffbot {
         float kp_;
         float ki_;
         float kd_;
+        bool debug_;
         double proportional_;
         double integral_;
         double derivative_;

@@ -5,13 +5,14 @@
 
 using namespace std;
 
-diffbot::PID::PID(ros::NodeHandle& nh, float min_val, float max_val, float kp, float ki, float kd) :
+diffbot::PID::PID(ros::NodeHandle& nh, float min_val, float max_val, float kp, float ki, float kd, bool debug):
     nh_(nh),
     min_val_(min_val),
     max_val_(max_val),
     kp_(kp),
     ki_(ki),
-    kd_(kd)
+    kd_(kd),
+    debug_(debug)
 {
     prev_error_ = 0;
     last_time_ = sinceMillis;
@@ -42,15 +43,6 @@ double diffbot::PID::compute(float setpoint, float measured_value)
         integral_ = 0;
     }
 
-    String log_msg =
-            String("\nPID dt_: <") + String(dt_) 
-            + String("> current_time: <") + String(current_time) 
-            + String("> last_time_: <") + String(last_time_) 
-            + String("> error: <") + String(error)
-            + String("> integral_: <") + String(integral_) 
-            + String("> derivative_: ") + String(derivative_);
-
-    nh_.loginfo(log_msg.c_str());    
 
     double vkp = (kp_ * proportional_);
     double vki = (ki_ * integral_) / dt_;
@@ -60,13 +52,24 @@ double diffbot::PID::compute(float setpoint, float measured_value)
     prev_error_ = error;
     last_time_ = sinceMillis;
 
-    log_msg =
+    if (debug_)
+    {
+        String log_msg =
+                String("\nPID dt_: <") + String(dt_) 
+                + String("> current_time: <") + String(current_time) 
+                + String("> last_time_: <") + String(last_time_) 
+                + String("> error: <") + String(error)
+                + String("> integral_: <") + String(integral_) 
+                + String("> derivative_: ") + String(derivative_);        
+        nh_.loginfo(log_msg.c_str()); 
+        
+        log_msg =
             String("\nPID vkp: <") + String(vkp) 
             + String("> vki: <") + String(vki)
             + String("> vkd: <") + String(vkd) 
             + String("> pid: ") + String(pid);  
-
-    nh_.loginfo(log_msg.c_str()); 
+        nh_.loginfo(log_msg.c_str()); 
+    }
 
     return pid;
 }

@@ -150,5 +150,5 @@ void loop()
 
     // Call all the callbacks waiting to be called
     nh.spinOnce();
-    delay(300);
+    delay(100);
 }
