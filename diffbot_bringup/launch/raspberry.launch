@@ -1,14 +1,24 @@
 <launch>
 
-   <arg name="laser_frame_id" default="rplidar_laser_link" />
+    <!--arg name="model" default="$(env DIFFBOT_MODEL)" doc="model type [diffbot, remo]"/-->
+    <arg name="model" default="diffbot" doc="model type [diffbot, remo]"/>
+    <arg name="description_package" default="$(eval find(arg('model') + '_description'))" />
+    <arg name="urdf_file" default="$(find xacro)/xacro '$(arg description_package)/urdf/$(arg model).urdf.xacro'" />
+
+    <!-- Load the URDF model of DiffBot into the ROS Parameter Server -->
+    <param name="diffbot/robot_description" command="$(arg urdf_file)" />
+
+    <!-- Load controller config to the parameter server -->
+    <rosparam command="load" file="$(find diffbot_control)/config/diffbot_control.yaml"/>
+
+    <!-- Load base config to the parameter server -->
+    <rosparam command="load" file="$(find diffbot_base)/config/base.yaml"/>    
 
    <include file="$(find wit_node)/launch/wit_node.launch"/>
 
-   <include file="$(find diffbot_bringup)/launch/rplidar.launch" ns="diffbot">
-      <arg name="laser_frame_id" value="$(arg laser_frame_id)" />
-   </include>
-<!--
+   <!--<include file="$(find diffbot_bringup)/launch/rplidar.launch" />-->
+
    <node name="rosserial_base_controller" pkg="rosserial_python" type="serial_node.py"
-         respawn="false" output="screen" ns="diffbot" args="_port:=/dev/ttyACM0 _baud:=115200"/>-->
+         respawn="false" output="screen" args="_port:=/dev/ttyACM0 _baud:=115200"/>
 
 </launch>
