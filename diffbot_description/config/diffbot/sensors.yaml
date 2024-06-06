@@ -27,3 +27,17 @@ imu:
   #mesh: ''
   scale: '0.01 0.01 0.005'
   color: Gazebo/FlatBlack
+
+camera:
+  mass: 0.005
+  size:
+    x: 0.01
+    y: 0.01
+    z: 0.003
+  dx: 0.0
+  dy: 0.0
+  dz: 0.04
+  mesh: '../components/camera.stl' # Name of the mesh files. Leave it empty ('') to have a red box
+  #mesh: ''
+  scale: '0.01 0.01 0.005'
+  color: Gazebo/FlatBlack

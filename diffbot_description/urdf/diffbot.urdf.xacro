@@ -71,6 +71,10 @@
                    sensor_prop="${sensor_prop}">
   </xacro:imu_sensor>  
 
+  <xacro:camera_sensor parent_link="base_link"
+                   sensor_prop="${sensor_prop}">
+  </xacro:camera_sensor>  
+
   <!-- Gazebo -->
   <xacro:gazebo_ros_control robotNamespace="/diffbot">
   </xacro:gazebo_ros_control>
