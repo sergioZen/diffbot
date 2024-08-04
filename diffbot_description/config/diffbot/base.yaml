@@ -1,7 +1,7 @@
 base:
   mass: 0.8               # Base mass in Kg
-  x_size: 0.195           # Dimension in x axis
-  y_size: 0.08            # Dimension in y axis
-  z_size: 0.005           # Dimension in z axis
-  mesh: 'chassis.stl'  # Name of the mesh files. Leave it empty ('') to have a white base.
-  #mesh: ''
+  x_size: 0.21           # Dimension in x axis
+  y_size: 0.13            # Dimension in y axis
+  z_size: 0.14            # Dimension in z axis
+  #mesh: 'TurtleBot3Burger.stl'  # Name of the mesh files. Leave it empty ('') to have a white base.
+  mesh: 'TurtleBot3SBR.stl'

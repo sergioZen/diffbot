@@ -4,9 +4,9 @@ laser:
   length: 0.01      # Wheel length in m, considering is as a cylinder
   mesh: 'rplidar-a2.stl'  # Name of the mesh files. Leave it empty ('') to have a red wheel
   #mesh: ''
-  dx: 0.0
+  dx: 0.05
   dy: 0.0
-  dz: 0.04
+  dz: 0.16
   angular_range:
     min: -3.1415
     max: 3.1415
@@ -17,15 +17,15 @@ imu:
   mass: 0.005
   size:
     x: 0.01
-    y: 0.01
-    z: 0.003
+    y: -0.05
+    z: 0.12
   #type: 'mpu' # choose one camera type [mpu, bosch]
   dx: -0.045
   dy: 0.02
   dz: 0.01
   mesh: '../components/bno055.stl' # Name of the mesh files. Leave it empty ('') to have a red box
   #mesh: ''
-  scale: '0.01 0.01 0.005'
+  scale: '0.001 0.001 0.005'
   color: Gazebo/FlatBlack
 
 camera:
@@ -40,4 +40,4 @@ camera:
   mesh: '../components/camera.stl' # Name of the mesh files. Leave it empty ('') to have a red box
   #mesh: ''
   scale: '0.01 0.01 0.005'
-  color: Gazebo/FlatBlack
+  color: Gazebo/Grey

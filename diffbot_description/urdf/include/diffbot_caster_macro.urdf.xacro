@@ -31,10 +31,10 @@
         <visual>
           <origin xyz="0 0 ${-wheel_props['base']['size']['z']/2.0}" rpy="0 0 0" />
           <geometry>
-            <xacro:if value="${scale != '' }" >
-              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['base']['mesh']}" scale="${scale}"/>
+            <xacro:if value="${wheel_props['scale'] != '' }" >
+              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['base']['mesh']}" scale="${wheel_props['scale']}"/>
             </xacro:if>
-            <xacro:if value="${scale == '' }" >
+            <xacro:if value="${wheel_props['scale'] == '' }" >
               <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['base']['mesh']}" />
             </xacro:if>
           </geometry>
@@ -83,10 +83,10 @@
         <visual>
           <origin xyz="0 0 ${-wheel_props['hub']['size']['z']/2.0}" rpy="0 0 0" />
           <geometry>
-            <xacro:if value="${scale != '' }" >
-              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['hub']['mesh']}" scale="${scale}"/>
+            <xacro:if value="${wheel_props['scale'] != '' }" >
+              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['hub']['mesh']}" scale="${wheel_props['scale']}"/>
             </xacro:if>
-            <xacro:if value="${scale == '' }" >
+            <xacro:if value="${wheel_props['scale'] == '' }" >
               <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['hub']['mesh']}" />
             </xacro:if>
           </geometry>
@@ -134,10 +134,10 @@
         <visual>
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
-            <xacro:if value="${scale != '' }" >
-              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['wheel']['mesh']}" scale="${scale}"/>
+            <xacro:if value="${wheel_props['scale'] != '' }" >
+              <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['wheel']['mesh']}" scale="${wheel_props['scale']}"/>
             </xacro:if>
-            <xacro:if value="${scale == '' }" >
+            <xacro:if value="${wheel_props['scale'] == '' }" >
               <mesh filename="package://${package_name}/meshes/${robot_name}/${wheel_props['wheel']['mesh']}" />
             </xacro:if>
           </geometry>
