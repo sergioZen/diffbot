@@ -22,7 +22,24 @@
 
     <!-- Load the controllers -->
     <!-- This will use the controller manager that got started inside the difbot_base node -->
+    <!--
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
         output="screen" ns="diffbot" args="joint_state_controller
-                                            mobile_base_controller"/>
+                                           mobile_base_controller">
+      <remap from="/cmd_vel" to="/diffbot/mobile_base_controller/cmd_vel"/>
+    </node>-->
+
+  <!-- rqt_plot monitoring -->
+  <!--
+  <node name="diffbot_pos_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/diffbot_controller/odom/pose/pose/position/x" />
+
+  <node name="diffbot_vel_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/diffbot_controller/odom/twist/twist/linear/x" />
+  -->
+                                           
 </launch>

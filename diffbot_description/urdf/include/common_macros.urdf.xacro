@@ -184,8 +184,11 @@
     </xacro:box_inertia>
     <xacro:if value="${mesh != '' }" >
       <visual>
-        <xacro:insert_block name="origin" />
+
+        <origin xyz="0.04 0.0 0.017" rpy="1.57 0.0 0.0"/>
         <geometry>
+          
+
           <!-- The folder path get a folder_name global parameter -->
           <xacro:if value="${scale != '' }" >
             <mesh filename="package://${package_name}/meshes/${robot_name}/${mesh}" scale="${scale}"/>
@@ -194,7 +197,7 @@
             <mesh filename="package://${package_name}/meshes/${robot_name}/${mesh}" />
           </xacro:if>
         </geometry>
-        <material name="white" />
+        <material name="dark_grey" />
       </visual>
     </xacro:if>
     <xacro:if value="${mesh == '' }" >
@@ -203,7 +206,7 @@
         <geometry>
           <box size="${base_prop['base']['x_size']} ${base_prop['base']['y_size']} ${base_prop['base']['z_size']}"/>
         </geometry>
-        <material name="white" />
+        <material name="red" />
       </visual>
     </xacro:if>  
     <collision>

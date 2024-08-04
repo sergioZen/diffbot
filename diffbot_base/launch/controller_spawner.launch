@@ -1,0 +1,38 @@
+<!-- https://github.com/ros-controls/ros_controllers/tree/kinetic-devel/diff_drive_controller/test -->
+<launch>
+    <!--arg name="model" default="$(env DIFFBOT_MODEL)" doc="model type [diffbot, remo]"/-->
+    <arg name="model" default="diffbot" doc="model type [diffbot, remo]"/>
+    <arg name="description_package" default="$(eval find(arg('model') + '_description'))" />
+    <arg name="urdf_file" default="$(find xacro)/xacro '$(arg description_package)/urdf/$(arg model).urdf.xacro'" />
+
+    <!-- Load the URDF model of DiffBot into the ROS Parameter Server -->
+    <param name="diffbot/robot_description" command="$(arg urdf_file)" />
+
+    <!-- Load controller config to the parameter server -->
+    <rosparam command="load" 
+              file="$(find diffbot_control)/config/diffbot_control.yaml"/>
+
+    <!-- Load base config to the parameter server -->
+    <rosparam command="load" 
+              file="$(find diffbot_base)/config/base.yaml"/>
+
+    <!-- Load the controllers -->
+    <!-- This will use the controller manager that got started inside the difbot_base node -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="diffbot" args="joint_state_controller
+                                           mobile_base_controller"/>
+
+  <!-- rqt_plot monitoring -->
+  <!--
+  <node name="diffbot_pos_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/diffbot_controller/odom/pose/pose/position/x" />
+
+  <node name="diffbot_vel_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/diffbot_controller/odom/twist/twist/linear/x" />
+  -->
+                                           
+</launch>

@@ -1,8 +1,8 @@
 <launch>
   <!-- Arguments -->
   <arg name="model" default="diffbot" doc="model type [diffbot, remo]"/>
-  <arg name="map_file" default="$(find diffbot_navigation)/maps/map.yaml"/>
-  <arg name="open_rviz" default="true"/>
+  <arg name="map_file" default="$(find diffbot_navigation)/maps/sbrOffice.yaml"/>
+  <arg name="open_rviz" default="false"/>
   <arg name="move_forward_only" default="false"/>
   <arg name="local_planner" default="dwa" doc="Local planner can be either dwa, base, teb or pose"/>
 
@@ -12,12 +12,16 @@
   </include-->
 
   <!-- Map server -->
+  <!--
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+  -->
 
   <!-- AMCL -->
+  <!--
   <include file="$(find diffbot_navigation)/launch/amcl.launch">
     <arg name="model" value="$(arg model)" />
   </include>
+  -->
 
   <!-- move_base -->
   <include file="$(find diffbot_navigation)/launch/move_base.launch">
@@ -27,8 +31,10 @@
   </include>
 
   <!-- rviz -->
+  <!--
   <group if="$(arg open_rviz)"> 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find diffbot_navigation)/rviz/$(arg model)_navigation.rviz"/>
   </group>
+  -->
 </launch>
