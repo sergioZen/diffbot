@@ -27,12 +27,11 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
         output="screen" ns="diffbot" />
 
-    <!--
+    
     <include file="$(find diffbot_bringup)/launch/rplidar.launch" ns="diffbot">
         <arg name="laser_frame_id" value="$(arg laser_frame_id)" />
     </include>
-    -->
-
+    
 </launch>
 
 

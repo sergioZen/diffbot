@@ -9,4 +9,4 @@ diffbot:
   pwm_limit: 1.0
   debug:
     hardware_interface: true
-    base_controller: true
+    base_controller: false

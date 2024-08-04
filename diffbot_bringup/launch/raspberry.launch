@@ -8,6 +8,10 @@
     <!-- Load the URDF model of DiffBot into the ROS Parameter Server -->
     <param name="diffbot/robot_description" command="$(arg urdf_file)" />
 
+   <include file="$(find diffbot_bringup)/launch/rplidar.launch" />
+
+   <include file="$(find diffbot_bringup)/launch/rpicamera.launch" />
+
     <!-- Load controller config to the parameter server -->
     <rosparam command="load" file="$(find diffbot_control)/config/diffbot_control.yaml"/>
 
@@ -15,8 +19,6 @@
     <rosparam command="load" file="$(find diffbot_base)/config/base.yaml"/>    
 
    <include file="$(find wit_node)/launch/wit_node.launch"/>
-
-   <!--<include file="$(find diffbot_bringup)/launch/rplidar.launch" />-->
 
    <node name="rosserial_base_controller" pkg="rosserial_python" type="serial_node.py"
          respawn="false" output="screen" args="_port:=/dev/ttyACM0 _baud:=115200"/>
