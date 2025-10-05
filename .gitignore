@@ -1,55 +1,56 @@
-# Compiled Object files
+--------------------------------------------------
+# Compiled Object / Binary Files
 *.slo
 *.lo
 *.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
 *.mod
-
-# Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
-
-# Executables
 *.exe
 *.out
 *.app
 
-# Eclipse
+#--------------------------------------------------
+# IDE / Editor metadata
 .cproject
 .project
-.settings
+.settings/
 *.pydevproject
+.vscode/
+.idea/
 
-# ROS
-build
-devel
-logs
-.catkin_tools
-
+#--------------------------------------------------
 # Python
 *.pyc
+__pycache__/
 
-# OS X
+#--------------------------------------------------
+# ROS2 (colcon)
+build/
+install/
+log/
+
+# Optional: if you keep multiple workspaces inside repo
+ros1_ws/build/
+ros1_ws/devel/
+ros1_ws/logs/
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+#--------------------------------------------------
+# Common system junk
 .DS_Store
+Thumbs.db
 
-
+#--------------------------------------------------
 # Custom
-docs/plots
-.vscode
-.pio
-
-# intermediate documentation
-site
+docs/plots/
+.pio/
+site/
