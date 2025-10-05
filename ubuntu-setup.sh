@@ -29,15 +29,7 @@ sudo apt -y install python-catkin-tools
 
 
 # git setup
-git config --global credential.helper store
-
-echo "Enter your user.email for git config" 
-read email
-
-git config --global user.email \"$email\"
-
-echo "Enter your user.name for git config"
-read name
-
-git config --global user.name \"$name\"
+git config --global credential.helper manager
+git config --global user.name "sergioZen"
+git config --global user.email "sergiodelta@hotmail.com"
 
